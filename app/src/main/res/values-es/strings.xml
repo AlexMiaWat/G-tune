@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">G-tune. Sintonizador de guitarra</string>
+    <string name="b_std">Estándar B</string>
+    <string name="bass">BAJO</string>
+    <string name="cross_a">Alternativa Cruz A</string>
+    <string name="double_drop_d_std">Doble gota D</string>
+    <string name="drop_c_std">Gota C</string>
+    <string name="drop_d_std">Gota D</string>
+    <string name="e_std">E 6 str. estándar</string>
+    <string name="hello_world">Hello world</string>
+    <string name="low_c_std">Bajo C \"Céltico\"</string>
+    <string name="open_a_std">Abrir A</string>
+    <string name="open_c6_std">Abrir C6 \"Led Zeppelin\"</string>
+    <string name="open_c_std">Abrir C</string>
+    <string name="open_d6_std">Abrir D6</string>
+    <string name="open_d_std">Abierto D \"Dylan\"</string>
+    <string name="open_e_std">Abierto E</string>
+    <string name="open_g_std">Abrir G \"Piedras\"</string>
+    <string name="_1st">1ra</string>
+    <string name="_2nd">2do</string>
+    <string name="_3rd">3er</string>
+    <string name="_4th">4to</string>
+    <string name="_5th">5to</string>
+    <string name="_6th">6to</string>
+    <string name="A">A</string>
+    <string name="Ap">A#</string>
+    <string name="B">B</string>
+    <string name="Bp">B#</string>
+    <string name="C">C</string>
+    <string name="Cp">C#</string>
+    <string name="D">D</string>
+    <string name="Dp">D#</string>
+    <string name="E">E</string>
+    <string name="Ep">E#</string>
+    <string name="F">F</string>
+    <string name="Fp">F#</string>
+    <string name="G">G</string>
+    <string name="Gp">G#</string>
+</resources>

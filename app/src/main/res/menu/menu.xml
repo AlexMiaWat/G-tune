@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/e_std"
+          android:title="@string/e_std" />
+    <item android:id="@+id/b_std"
+          android:title="@string/b_std" />
+
+    <item android:id="@+id/open_a_std"
+        android:title="@string/open_a_std" />
+    <item android:id="@+id/open_c_std"
+        android:title="@string/open_c_std" />
+    <item android:id="@+id/open_c6_std"
+        android:title="@string/open_c6_std" />
+    <item android:id="@+id/open_d_std"
+        android:title="@string/open_d_std" />
+    <item android:id="@+id/open_d6_std"
+        android:title="@string/open_d6_std" />
+    <item android:id="@+id/open_e_std"
+        android:title="@string/open_e_std" />
+
+    <item android:id="@+id/low_c_std"
+        android:title="@string/low_c_std" />
+
+    <item android:id="@+id/open_g_std"
+        android:title="@string/open_g_std" />
+
+    <item android:id="@+id/drop_d_std"
+        android:title="@string/drop_d_std" />
+    <item android:id="@+id/drop_c_std"
+        android:title="@string/drop_c_std" />
+
+    <item android:id="@+id/double_drop_d_std"
+        android:title="@string/double_drop_d_std" />
+
+    <item android:id="@+id/cross_a"
+        android:title="@string/cross_a" />
+
+    <item android:id="@+id/bass"
+        android:title="@string/bass" />
+</menu>

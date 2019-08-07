@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">G-tune. Тонкая настройка гитары</string>
+    <string name="b_std">Классический В \"Си\"</string>
+    <string name="e_std">Классический Е \"Ми\"</string>
+    <string name="drop_d_std">Пониженный D \"Ми\" на 6</string>
+    <string name="drop_c_std">Пониженный С \"До\" на 6</string>
+    <string name="double_drop_d_std">Пониженный D \"Ре\" на 1 и 6</string>
+    <string name="open_c_std">Открытый С \"До\" на 2, 4 и 6</string>
+    <string name="open_d_std">Открытый D \"Dylan\" \"Ре\" на 1, 4 и 6</string>
+    <string name="open_g_std">Открытый G \"Stones\" \"Соль\" на 3</string>
+    <string name="_1st">1я</string>
+    <string name="_2nd">2я</string>
+    <string name="_3rd">3я</string>
+    <string name="_4th">4я</string>
+    <string name="_5th">5я</string>
+    <string name="_6th">6я</string>
+    <string name="hello_world">Привет мир</string>
+    <string name="cross_a">Cross A Альтернативный строй</string>
+    <string name="open_a_std">Открытый A \"До\" на 2, 4 и 6</string>
+    <string name="E">Ми</string>
+    <string name="A">Ля</string>
+    <string name="D">Ре</string>
+    <string name="G">Соль</string>
+    <string name="B">Си</string>
+    <string name="C">До</string>
+    <string name="F">Фа</string>
+    <string name="Ep">Ми-диез</string>
+    <string name="Ap">Ля-диез</string>
+    <string name="Dp">Ре-диез</string>
+    <string name="Gp">Соль-диез</string>
+    <string name="Bp">Си-диез</string>
+    <string name="Cp">До-диез</string>
+    <string name="Fp">Фа-диез</string>
+    <string name="open_c6_std">Открытый C6 \"Led Zeppelin\"</string>
+    <string name="open_d6_std">Открытый D6 \"Ре\" на 1, 4 и 6</string>
+    <string name="open_e_std">Открытый E \"Ми\" на 1, 4 и 6</string>
+    <string name="low_c_std">Низкий C \"Celtic\" \"До\" на 6</string>
+    <string name="bass">Бас настройка 6, 5, 4 струн</string>
+</resources>
