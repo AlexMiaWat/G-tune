@@ -37,4 +37,6 @@
     <string name="Fp">F#</string>
     <string name="G">G</string>
     <string name="Gp">G#</string>
+    <string name="exit_frase">Are you sure you want leave app?</string>
+    <string name="exit">Leave</string>
 </resources>

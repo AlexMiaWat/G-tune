@@ -37,4 +37,6 @@
     <string name="open_e_std">Open E</string>
     <string name="low_c_std">Low C \"Celtic\"</string>
     <string name="bass">BASS</string>
+    <string name="exit_frase">Are you sure you want leave app?</string>
+    <string name="exit">Leave</string>
 </resources>

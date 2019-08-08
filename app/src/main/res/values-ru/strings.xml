@@ -37,4 +37,6 @@
     <string name="open_e_std">Открытый E \"Ми\" на 1, 4 и 6</string>
     <string name="low_c_std">Низкий C \"Celtic\" \"До\" на 6</string>
     <string name="bass">Бас настройка 6, 5, 4 струн</string>
+    <string name="exit_frase">Вы уверены, что хотите закрыть приложение?</string>
+    <string name="exit">Выход</string>
 </resources>

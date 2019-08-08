@@ -38,4 +38,6 @@
     <string name="low_c_std">Low C \"Celtic\"</string>
     <string name="bass">BASS</string>
     <string name="publisher_id" translatable="false">ca-app-pub-9163301852390874/6770058536</string>
+    <string name="exit_frase">Are you sure you want leave app?</string>
+    <string name="exit">Leave</string>
 </resources>

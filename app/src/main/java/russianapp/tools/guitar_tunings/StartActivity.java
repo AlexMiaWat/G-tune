@@ -2,18 +2,19 @@ package russianapp.tools.guitar_tunings;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
-
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class StartActivity extends Activity {
 
@@ -64,7 +65,61 @@ public class StartActivity extends Activity {
 
     /** Called when the user taps PERMISSION_GRANTED */
     public void PERMISSION_GRANTED() {
-        Intent intent = new Intent(this, PTuneActivity.class);
-        startActivity(intent);
+        // Задержка
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getApplicationContext(), PTuneActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        }, 500);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            // Build an AlertDialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            // Set a title for alert dialog
+            builder.setTitle(getResources().getString(R.string.exit));
+
+            // Ask the final question
+            builder.setMessage(getResources().getString(R.string.exit_frase));
+
+            // Set click listener for alert dialog buttons
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch(which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            // User clicked the Yes button
+                            finish();
+                            ActivityCompat.finishAffinity(main);
+                            System.exit(0);
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            // User clicked the No button
+                            break;
+                    }
+                }
+            };
+
+            // Set the alert dialog yes button click listener
+            builder.setPositiveButton("Yes", dialogClickListener);
+
+            // Set the alert dialog no button click listener
+            builder.setNegativeButton("No",dialogClickListener);
+
+            AlertDialog dialog = builder.create();
+            // Display the alert dialog on interface
+            dialog.show();
+
+        }
+        return true;
     }
 }

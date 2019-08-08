@@ -1,19 +1,18 @@
 package russianapp.tools.guitar_tunings;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -41,7 +40,6 @@ public class PTuneActivity extends Activity {
     private FrameLayout bar;
 	private DialView dial;
 	private TextView topbar, tuner_txt, aim, hz;
-    private LinearLayout baner;
 	private float targetFrequency;
 	private CaptureThread mCapture;
 	private Handler mHandler;
@@ -51,11 +49,15 @@ public class PTuneActivity extends Activity {
     AdView mAdView;
     AdRequest adRequest;
 
+    Activity main;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); // нет заголовка
         setContentView(R.layout.main);
+
+        main = this;
 
         dial = findViewById(R.id.dial);
         topbar = findViewById(R.id.textView1);
@@ -711,5 +713,60 @@ public class PTuneActivity extends Activity {
 
     public void onMenuClicked(View v) {
         openOptionsMenu();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+//            ImageView image = new ImageView(this);
+//            image.setMaxHeight(15);
+//            image.setMaxHeight(15);
+//            image.setImageResource(R.drawable.exit);
+
+            // Build an AlertDialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            // Set a title for alert dialog
+            builder.setTitle(getResources().getString(R.string.exit));
+
+            // Ask the final question
+            builder.setMessage(getResources().getString(R.string.exit_frase));
+
+            // Set click listener for alert dialog buttons
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch(which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            // User clicked the Yes button
+
+                            finish();
+                            ActivityCompat.finishAffinity(main);
+                            System.exit(0);
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            // User clicked the No button
+                            break;
+                    }
+                }
+            };
+
+            // Set the alert dialog yes button click listener
+            builder.setPositiveButton("Yes", dialogClickListener);
+
+            // Set the alert dialog no button click listener
+            builder.setNegativeButton("No",dialogClickListener);
+
+            //builder.setView(image);
+
+            AlertDialog dialog = builder.create();
+            // Display the alert dialog on interface
+            dialog.show();
+
+        }
+        return true;
     }
 }
