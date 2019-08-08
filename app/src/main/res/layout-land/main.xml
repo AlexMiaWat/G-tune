@@ -258,12 +258,12 @@
                     tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded,RtlSymmetry" />
 
                     <com.google.android.gms.ads.AdView
-                    android:id="@+id/adView"
+                        android:id="@+id/adView"
                         android:layout_gravity="bottom"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                        ads:adSize="BANNER"
-                    ads:adUnitId="@string/publisher_id">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        ads:adSize="SMART_BANNER"
+                        ads:adUnitId="@string/publisher_id">
                     </com.google.android.gms.ads.AdView>
             </LinearLayout>
 

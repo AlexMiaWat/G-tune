@@ -30,8 +30,12 @@ public class CaptureThread extends Thread {
 		
 		// Create storage container for read data.
 		byte buffer[] = new byte[bufferSize];
-		
-		recorder.startRecording();
+
+		try {
+			recorder.startRecording();
+		} catch (IllegalStateException e) {
+			return;
+		}
 
 		while(isRunning) {
 
