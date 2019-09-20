@@ -689,17 +689,8 @@ public class PTuneActivity extends Activity {
 
         hz.setText(rb.getText());
 
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup1);
+        RadioGroup radioGroup = findViewById(R.id.radioGroup1);
         int position = radioGroup.indexOfChild(rb);
-
-        if ((position > 1) && (position <= 5)) {
-            mAdView.loadAd(adRequest);
-            mAdView.setVisibility(View.VISIBLE);
-
-        }else{
-            mAdView.destroy();
-            mAdView.setVisibility(View.GONE);
-        }
 
         // Update TextView
         targetFrequency = Float.parseFloat((String)rb.getTag());
@@ -707,6 +698,17 @@ public class PTuneActivity extends Activity {
             aim.setText(String.format("%.1f Hz", targetFrequency));
         else
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
+
+        if (mAdView != null)
+            try {
+                if ((position > 1) && (position <= 5)) {
+                    mAdView.loadAd(adRequest);
+                    mAdView.setVisibility(View.VISIBLE);
+                } else {
+                    mAdView.destroy();
+                    mAdView.setVisibility(View.GONE);
+                }
+            } catch (Exception e) {}
     }
 
     public void onMenuClicked(View v) {

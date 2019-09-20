@@ -1,24 +1,19 @@
 package russianapp.tools.guitar_tunings.graphics;
 
-import russianapp.tools.guitar_tunings.R;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
-import static android.R.attr.height;
-import static android.R.attr.width;
+import russianapp.tools.guitar_tunings.R;
+
 import static android.content.ContentValues.TAG;
 
 public class DialView extends SurfaceView implements SurfaceHolder.Callback {
@@ -201,8 +196,12 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder arg0) {
-		mThread.setRunning(true);
-		mThread.start();
+		try {
+			if (!mThread.isRunning) {
+				mThread.setRunning(true);
+				mThread.start();
+			}
+		} catch (Exception e) {}
 	}
 
 	@Override

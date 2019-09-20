@@ -61,7 +61,8 @@
                     android:layout_gravity="top|center_horizontal"
                     android:clickable="false"
                     android:focusable="false"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    tools:targetApi="lollipop">
 
                     <RadioButton
                         android:id="@+id/radio0"
@@ -75,7 +76,7 @@
                         android:textColor="@color/GrreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText"
-                        tools:targetApi="lollipop" />
+                         />
 
                     <RadioButton
                         android:id="@+id/radio1"
@@ -262,7 +263,7 @@
                         android:layout_gravity="bottom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        ads:adSize="SMART_BANNER"
+                        ads:adSize="BANNER"
                         ads:adUnitId="@string/publisher_id">
                     </com.google.android.gms.ads.AdView>
             </LinearLayout>
