@@ -8,7 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
+
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,6 +22,8 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -56,6 +58,12 @@ public class PTuneActivity extends Activity {
         setContentView(R.layout.main);
 
         main = this;
+
+        // err
+        bar.bringToFront();
+        aim.bringToFront();
+        hz.bringToFront();
+        // err
 
         dial = findViewById(R.id.dial);
         topbar = findViewById(R.id.textView1);

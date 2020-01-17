@@ -40,4 +40,6 @@
     <string name="publisher_id" translatable="false">ca-app-pub-9163301852390874/6770058536</string>
     <string name="exit_frase">Are you sure you want leave app?</string>
     <string name="exit">Leave</string>
+
+    <string name="ask_for_error_log_app" translatable="false">Guitar tuner перезагружается после ошибки...\nApp is restarting after the error...\nThank you for your support.</string>
 </resources>
