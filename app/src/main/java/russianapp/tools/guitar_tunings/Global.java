@@ -6,30 +6,13 @@ import android.os.StrictMode;
 
 import androidx.multidex.MultiDex;
 
-import com.rohitss.uceh.UCEHandler;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import components.UCEHandler;
 
 public class Global extends Application {
 
     public static Global instance;
 
-    public boolean offLineMode = false;
+    public PTuneActivity pTuneActivity;
 
     public static Global getInstance() {
         return instance;

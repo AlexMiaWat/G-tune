@@ -27,11 +27,6 @@ import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
-//import com.facebook.common.util.UriUtil;
-//import com.facebook.drawee.backends.pipeline.Fresco;
-//import com.facebook.drawee.interfaces.DraweeController;
-//import com.facebook.drawee.view.SimpleDraweeView;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -122,19 +117,6 @@ public final class DefaultErrorActivity extends Activity {
 
         activity = this;
 
-//        // Картинка загрузки
-//        SimpleDraweeView ivFeedCenter = findViewById(R.id.ivFeedCenter);
-//        Uri uri;
-//        if (PreferencesManager.getBooleanPreference(this, PreferencesManager.ANIMATION_ON, true))
-//            // Gif анимация загрузка
-//            uri = new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(R.drawable.ball_loading)).build();
-//        else
-//            // Static picture
-//            uri = new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(R.drawable.ball_not_loading)).build();
-//
-//        DraweeController controller = Fresco.newDraweeControllerBuilder().setUri(uri).setAutoPlayAnimations(true).build();
-//        ivFeedCenter.setController(controller);
-
         // Сразу отправить ошибку по почте
         emailErrorLog();
 
@@ -169,7 +151,7 @@ public final class DefaultErrorActivity extends Activity {
         findViewById(R.id.button_email_error_log).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emailErrorLog();
+                //emailErrorLog();
                 emailErrorLogUser();
             }
         });
@@ -350,9 +332,9 @@ public final class DefaultErrorActivity extends Activity {
             String activityLog = getActivityLogFromIntent(intent);
             errorReport.append(LINE_SEPARATOR);
 
-//            // MAIN ACTIVITY INFO
-//            errorReport.append(intent.getStringExtra(EXTRA_MAIN_ACTIVITY_INFO));
-//            errorReport.append(LINE_SEPARATOR);
+            // MAIN ACTIVITY INFO
+            errorReport.append(intent.getStringExtra(EXTRA_MAIN_ACTIVITY_INFO));
+            errorReport.append(LINE_SEPARATOR);
 //
 //            // ITEM INFO
 //            errorReport.append(LINE_SEPARATOR);
@@ -433,7 +415,7 @@ public final class DefaultErrorActivity extends Activity {
         xmail.EMAIL_FROM = new String(Base64.decode(getEMAILFROM(), Base64.DEFAULT));
         xmail.EMAIL_TO = new String(Base64.decode(getEMAILTO(), Base64.DEFAULT));
 
-        xmail.initialize("UKP err: " + getVersionName(DefaultErrorActivity.this) + ": " + subject);
+        xmail.initialize("GTR err: " + getVersionName(DefaultErrorActivity.this) + ": " + subject);
         xMail.sendMessageAsync task = new xMail.sendMessageAsync(DefaultErrorActivity.this, xmail.message);
         task.execute(errorLog);
 

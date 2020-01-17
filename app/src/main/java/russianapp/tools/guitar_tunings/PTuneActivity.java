@@ -51,6 +51,8 @@ public class PTuneActivity extends Activity {
 
     Activity main;
 
+    public Global globalVariable;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,10 +61,14 @@ public class PTuneActivity extends Activity {
 
         main = this;
 
+        // Set global variables
+        globalVariable = (Global) getApplicationContext();
+        globalVariable.pTuneActivity = this;
+
         // err
-        bar.bringToFront();
-        aim.bringToFront();
-        hz.bringToFront();
+//        bar.bringToFront();
+//       aim.bringToFront();
+//        hz.bringToFront();
         // err
 
         dial = findViewById(R.id.dial);
@@ -651,6 +657,9 @@ public class PTuneActivity extends Activity {
         int selected = rg.getCheckedRadioButtonId();
         RadioButton rb = findViewById(selected);
 
+        // err
+//        rb = findViewById(456);
+
         hz.setText(rb.getText());
 
         // Update TextView
@@ -728,11 +737,6 @@ public class PTuneActivity extends Activity {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-//            ImageView image = new ImageView(this);
-//            image.setMaxHeight(15);
-//            image.setMaxHeight(15);
-//            image.setImageResource(R.drawable.exit);
-
             // Build an AlertDialog
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -776,5 +780,18 @@ public class PTuneActivity extends Activity {
 
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder result = new StringBuilder();
+
+        result.append("MAIN ACTIVITY INFO: " + "\n");
+        result.append("Current lang: " + lang + "\n");
+        result.append("Current targetFrequency: " + targetFrequency + "\n");
+        result.append("Current rb: " + hz.getText() + "\n");
+
+        return result.toString();
     }
 }

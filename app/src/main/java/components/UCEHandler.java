@@ -115,11 +115,11 @@ public final class UCEHandler {
 //                                        else
 //                                            intent.putExtra(EXTRA_ITEM_INFO, "ITEM INFO: null");
 //
-//                                        // MAIN ACTIVITY
-//                                        if (application.mainActivity != null)
-//                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, application.mainActivity.toString());
-//                                        else
-//                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, "MAIN ACTIVITY INFO: null");
+                                        // MAIN ACTIVITY
+                                        if (application.pTuneActivity != null)
+                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, application.pTuneActivity.toString());
+                                        else
+                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, "MAIN ACTIVITY INFO: null");
 
                                         if (isTrackActivitiesEnabled) {
                                             StringBuilder activityLogStringBuilder = new StringBuilder();
