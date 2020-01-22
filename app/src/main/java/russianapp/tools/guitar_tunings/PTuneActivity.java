@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -141,7 +140,7 @@ public class PTuneActivity extends Activity {
         }
 
         // Создаем обработчик нажатия смены языка
-        language = (ImageButton)findViewById(R.id.language);
+        language = findViewById(R.id.language);
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,22 +233,22 @@ public class PTuneActivity extends Activity {
 
     private void e_std_Clicked(){
         RadioButton rb;
-        rb = (RadioButton) findViewById(R.id.radio0);
+        rb = findViewById(R.id.radio0);
         rb.setText(getString(R.string._1st) + (" e"));
         rb.setTag("329.628");
-        rb = (RadioButton) findViewById(R.id.radio1);
+        rb = findViewById(R.id.radio1);
         rb.setText(getString(R.string._2nd) + " B");
         rb.setTag("246.942");
-        rb = (RadioButton) findViewById(R.id.radio2);
+        rb = findViewById(R.id.radio2);
         rb.setText(getString(R.string._3rd) + " G");
         rb.setTag("195.998");
-        rb = (RadioButton) findViewById(R.id.radio3);
+        rb = findViewById(R.id.radio3);
         rb.setText(getString(R.string._4th) + " D");
         rb.setTag("146.832");
-        rb = (RadioButton) findViewById(R.id.radio4);
+        rb = findViewById(R.id.radio4);
         rb.setText(getString(R.string._5th) + " A");
         rb.setTag("110.000");
-        rb = (RadioButton) findViewById(R.id.radio5);
+        rb = findViewById(R.id.radio5);
         rb.setText(getString(R.string._6th) + " E");
         rb.setTag("82.4069");
         updateTargetFrequency();
@@ -268,22 +267,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.b_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " B");
                 rb.setTag("246.942");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " G");
                 rb.setTag("185.000");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " D");
                 rb.setTag("147.832");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " A");
                 rb.setTag("110.000");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " E");
                 rb.setTag("82.4069");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " B");
                 rb.setTag("61.7354");
                 updateTargetFrequency();
@@ -291,27 +290,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_a_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " e");
                 rb.setTag("329.628");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " C#");
                 rb.setTag("277.200");
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " A");
                 rb.setTag("219.998");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " E");
                 rb.setTag("164.800");
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " E");
                 rb.setTag("82.410");
 
@@ -320,27 +319,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_c_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " E4");
                 rb.setTag("329.628");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " C");
                 rb.setTag("261.629"); //вверх 0,5 до До С
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G3");
                 rb.setTag("195.998");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " C");
                 rb.setTag("130.819");// вниз 1 до До С
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " G");
                 rb.setTag("98.000");// вниз 1 до Соль G
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " C");
                 rb.setTag("65.410"); //вниз 2 до До С
 
@@ -349,27 +348,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_c6_std: // Открытый C "Led Zeppelin"
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " e");
                 rb.setTag("329.628");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " C");
                 rb.setTag("261.629"); //вверх 0,5 до До С
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G");
                 rb.setTag("195.998");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " C");
                 rb.setTag("130.819");// вниз 1 до До С
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " C");
                 rb.setTag("65.410"); //вниз 2 до До С
 
@@ -378,27 +377,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_d_std: // Открытый D "Dylan"
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.660");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " A");
                 rb.setTag("220.000");
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " F#");
                 rb.setTag("185.000");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " D");
                 rb.setTag("147.830");
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " D");
                 rb.setTag("73.910");
 
@@ -407,27 +406,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_d6_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.660");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " B");
                 rb.setTag("246.900");
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " F#");
                 rb.setTag("185.000");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " D");
                 rb.setTag("146.830");
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " D");
                 rb.setTag("73.420");
 
@@ -436,27 +435,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_e_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " e");
                 rb.setTag("329.600");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " B");
                 rb.setTag("246.900");
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G#");
                 rb.setTag("207.700");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " E");
                 rb.setTag("164.800");
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " B");
                 rb.setTag("123.500");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " E");
                 rb.setTag("82.410");
 
@@ -465,27 +464,27 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.open_g_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.660");
 
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " B");
                 rb.setTag("246.940");
 
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G");
                 rb.setTag("196.000");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " D");
                 rb.setTag("146.830");
 
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " G");
                 rb.setTag("98.000");
 
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " D");
                 rb.setTag("73.420");
 
@@ -494,22 +493,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.drop_d_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " E");
                 rb.setTag("329.628");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " B");
                 rb.setTag("246.942");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G");
                 rb.setTag("195.998");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " D");
                 rb.setTag("146.832");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " D");
                 rb.setTag("73.910");
                 updateTargetFrequency();
@@ -517,22 +516,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.drop_c_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.700");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " A");
                 rb.setTag("220.000");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " F");
                 rb.setTag("174.610");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " C");
                 rb.setTag("130.810");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " G");
                 rb.setTag("98.000");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " C");
                 rb.setTag("65.410");
                 updateTargetFrequency();
@@ -540,23 +539,23 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.low_c_std: // Celtic
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.700");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " A");
                 rb.setTag("220.000");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G");
                 rb.setTag("196.000");
 
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " D");
                 rb.setTag("146.800");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " G");
                 rb.setTag("98.000");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " C");
                 rb.setTag("65.410");
                 updateTargetFrequency();
@@ -564,22 +563,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.double_drop_d_std:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " D");
                 rb.setTag("293.650");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " B");
                 rb.setTag("246.942");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G");
                 rb.setTag("196.000");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " F");
                 rb.setTag("147.830");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " D");
                 rb.setTag("73.910");
                 updateTargetFrequency();
@@ -587,22 +586,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.cross_a:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " a");
                 rb.setTag("440.000");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " e");
                 rb.setTag("329.630");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " a");
                 rb.setTag("220.000");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " e");
                 rb.setTag("164.810");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " A");
                 rb.setTag("110.000");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " E");
                 rb.setTag("82.407");
                 updateTargetFrequency();
@@ -610,22 +609,22 @@ public class PTuneActivity extends Activity {
                 return true;
 
             case R.id.bass:
-                rb = (RadioButton) findViewById(R.id.radio0);
+                rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " C");
                 rb.setTag("130.810");
-                rb = (RadioButton) findViewById(R.id.radio1);
+                rb = findViewById(R.id.radio1);
                 rb.setText(getString(R.string._2nd) + " G");
                 rb.setTag("98.000");
-                rb = (RadioButton) findViewById(R.id.radio2);
+                rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " D");
                 rb.setTag("73.420");
-                rb = (RadioButton) findViewById(R.id.radio3);
+                rb = findViewById(R.id.radio3);
                 rb.setText(getString(R.string._4th) + " A");
                 rb.setTag("55.000");
-                rb = (RadioButton) findViewById(R.id.radio4);
+                rb = findViewById(R.id.radio4);
                 rb.setText(getString(R.string._5th) + " E");
                 rb.setTag("41.200");
-                rb = (RadioButton) findViewById(R.id.radio5);
+                rb = findViewById(R.id.radio5);
                 rb.setText(getString(R.string._6th) + " B");
                 rb.setTag("30.870");
                 updateTargetFrequency();
@@ -659,8 +658,7 @@ public class PTuneActivity extends Activity {
 
         // err
 //        rb = findViewById(456);
-
-        hz.setText(rb.getText());
+        //hz.setText(rb.getText());
 
         // Update TextView
         targetFrequency = Float.parseFloat((String)rb.getTag());
@@ -790,7 +788,8 @@ public class PTuneActivity extends Activity {
         result.append("MAIN ACTIVITY INFO: " + "\n");
         result.append("Current lang: " + lang + "\n");
         result.append("Current targetFrequency: " + targetFrequency + "\n");
-        result.append("Current rb: " + hz.getText() + "\n");
+        if (hz != null)
+            result.append("Current rb: " + hz.getText() + "\n");
 
         return result.toString();
     }
