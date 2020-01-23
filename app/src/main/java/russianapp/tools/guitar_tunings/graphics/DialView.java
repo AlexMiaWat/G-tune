@@ -8,34 +8,76 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import russianapp.tools.guitar_tunings.R;
 
-import static android.content.ContentValues.TAG;
-
 public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 
     int svw, tph;
 
+	public void update(double value, int _sv, int _tp) {
+		mThread.setValue(value, _sv, _tp);
+	}
+
+	private DialThread mThread;
+
+	public DialView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+
+		SurfaceHolder holder = getHolder();
+		holder.addCallback(this);
+
+		mThread = new DialThread(holder, context, new Handler());
+	}
+
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		mThread.setSurfaceSize(width, height);
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder arg0) {
+		try {
+			if (!mThread.isRunning) {
+				mThread.setRunning(true);
+				mThread.start();
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder arg0) {
+		boolean retry = false;
+		mThread.setRunning(false);
+		while (retry) {
+			try {
+				mThread.join();
+				retry = false;
+			} catch (InterruptedException e) {
+				// nothing
+			}
+		}
+	}
+
 	class DialThread extends Thread {
-		
+
 		private SurfaceHolder mSurfaceHolder;
 		private boolean isRunning = false;
-		private float mValue = -90;
-		private float mPos = -90;
+		private double mValue = -90;
+		private double mPos = -90;
         private Paint paint;
-		
+
 		/** The background image. */
 		private Bitmap mBackgroundImage;
-		
+
 		public DialThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
 			mSurfaceHolder = surfaceHolder;
 			mBackgroundImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.dial);
 		}
-		
+
 		@Override
 		public void run() {
 			while(isRunning) {
@@ -44,7 +86,7 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 					c = mSurfaceHolder.lockCanvas();
 					synchronized (mSurfaceHolder) {
 						doDraw(c);
-						this.sleep(0,5);
+						sleep(0, 5);
 					}
 				} catch (InterruptedException e) {
 					android.os.Process.killProcess(android.os.Process.myPid());
@@ -61,7 +103,7 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 		}
-		
+
 		private void doDraw(Canvas canvas) {
 
                 Paint linePaint = new Paint();
@@ -99,14 +141,6 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
                         paint = new Paint();
                         canvas.drawBitmap(resizedBitmap, 0, 0, paint);
 
-                        //1:
-                        //Rect src = new Rect(0, 0, _width + svw, _height + tph);
-                        //Rect dest = new Rect(0, 0, canvas.getWidth() , canvas.getHeight() );
-                        //canvas.drawBitmap(mBackgroundImage, src, dest, null);
-
-                        //0:
-                        //canvas.drawBitmap(mBackgroundImage, 0, 0, null);
-
                         // Draw needle
                         float startX = canvas.getWidth() / 2;
                         float stopX = canvas.getWidth() / 2;
@@ -115,21 +149,15 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
                         updatePosition();
                         canvas.save();
                         //canvas.rotate(mValue, startX, startY);
-                        canvas.rotate(mPos, startX, startY);
+						canvas.rotate((float) mPos, startX, startY);
                         canvas.drawLine(startX, startY, stopX, stopY, linePaint);
                         canvas.restore();
                     }else{
-                        Log.i(TAG, "Сашка - Какашка!");
-                        //Thread.currentThread().interrupt();
-						android.os.Process.killProcess(android.os.Process.myPid());
+						//startApp(this);
                     }
                 }catch (NullPointerException e) {
-
-                    Log.i(TAG, "Сашка - Какашка!");
-                    //Thread.currentThread().interrupt();
-					android.os.Process.killProcess(android.os.Process.myPid());
+					//startApp(Global)
                 }
-           // }
         }
 
 		private void updatePosition() {
@@ -142,12 +170,12 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 				mPos = mValue;
 			}
 		}
-		
+
 		public void setSurfaceSize(int width, int height) {
 			synchronized(mSurfaceHolder) {
 				// TODO: It might be nice to store these values.
 				// TODO: Center the image in the available space.
-				
+
 				/*
 				 * Fit the background image to the width of the surface unless the surface
 				 * width is greater than twice the height, in this case fit the background
@@ -160,12 +188,12 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 		}
-		
+
 		public void setRunning(boolean b) {
 			isRunning = b;
 		}
-		
-		public void setValue(float f, int sv, int tp) {
+
+		public void setValue(double f, int sv, int tp) {
 			if (f < -90)
 	    		mValue = -90;
 			else if (f > 90)
@@ -177,48 +205,4 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
             tph = tp;
 		}
 	} // End DialThread class.
-
-	private DialThread mThread;
-	
-	public DialView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		SurfaceHolder holder = getHolder();
-		holder.addCallback(this);
-		
-		mThread = new DialThread(holder, context, new Handler());
-	}
-
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-		mThread.setSurfaceSize(width, height);
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder arg0) {
-		try {
-			if (!mThread.isRunning) {
-				mThread.setRunning(true);
-				mThread.start();
-			}
-		} catch (Exception e) {}
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder arg0) {
-		boolean retry = false;
-		mThread.setRunning(false);
-		while (retry) {
-			try {
-				mThread.join();
-				retry = false;
-			} catch (InterruptedException e) {
-				// nothing
-			}
-		}
-	}
-
-	public void update(float value, int _sv, int _tp) {
-		mThread.setValue(value, _sv, _tp);
-	}
 }

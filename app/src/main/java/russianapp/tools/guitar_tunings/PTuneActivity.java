@@ -30,6 +30,7 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import components.PlaySound;
 import russianapp.tools.guitar_tunings.audio.CaptureThread;
 import russianapp.tools.guitar_tunings.graphics.DialView;
 
@@ -39,7 +40,7 @@ public class PTuneActivity extends Activity {
     private FrameLayout bar;
 	private DialView dial;
 	private TextView topbar, tuner_txt, aim, hz;
-	private float targetFrequency;
+    private double targetFrequency;
 	private CaptureThread mCapture;
 	private Handler mHandler;
 	private ImageButton language;
@@ -47,6 +48,10 @@ public class PTuneActivity extends Activity {
     ArrayList<String> locs;
     AdView mAdView;
     AdRequest adRequest;
+
+    //Sounds sounds;
+    //PerfectTune perfectTune;
+    private PlaySound mPlaySound;
 
     Activity main;
 
@@ -58,17 +63,15 @@ public class PTuneActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE); // нет заголовка
         setContentView(R.layout.main);
 
+        // Sounds play
+        //sounds = new Sounds();
+        //perfectTune = new PerfectTune();
+
         main = this;
 
         // Set global variables
         globalVariable = (Global) getApplicationContext();
         globalVariable.pTuneActivity = this;
-
-        // err
-//        bar.bringToFront();
-//       aim.bringToFront();
-//        hz.bringToFront();
-        // err
 
         dial = findViewById(R.id.dial);
         topbar = findViewById(R.id.textView1);
@@ -656,10 +659,6 @@ public class PTuneActivity extends Activity {
         int selected = rg.getCheckedRadioButtonId();
         RadioButton rb = findViewById(selected);
 
-        // err
-//        rb = findViewById(456);
-        //hz.setText(rb.getText());
-
         // Update TextView
         targetFrequency = Float.parseFloat((String)rb.getTag());
         if (targetFrequency < 1000f)
@@ -667,25 +666,25 @@ public class PTuneActivity extends Activity {
         else
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
     }
-    
-    public void updateDisplay(float frequency) {
+
+    public void updateDisplay(double frequency) {
     	// Calculate difference between target and measured frequency,
     	// given that the measured frequency can be a factor of target.
-    	float difference = 0;
+        double difference = 0;
     	if (frequency > targetFrequency) {
     		int divisions = (int) (frequency / targetFrequency);
-    		float modified = targetFrequency * (float) divisions;
+            double modified = targetFrequency * (double) divisions;
     		if (frequency - modified > targetFrequency / 2) {
     			modified += targetFrequency;
     			divisions++;
     		}
-    		difference = (frequency - modified) / (float) divisions;
+            difference = (frequency - modified) / (double) divisions;
     	} else {
     		// If target is greater than measured, just use difference.
     		difference = frequency - targetFrequency;
     	}
-    	
-    	float relativeFrequency = targetFrequency + difference;
+
+        double relativeFrequency = targetFrequency + difference;
     	
     	// Update TextView
     	if (relativeFrequency < 1000f)
@@ -694,7 +693,7 @@ public class PTuneActivity extends Activity {
             topbar.setText(String.format("%.2f kHz", relativeFrequency/1000));
 
     	// Update DialView
-    	float value = difference / (targetFrequency / 2) * 90;
+        double value = difference / (targetFrequency / 2) * 90;
         dial.update(value, 0, 0);
     }
     
@@ -709,11 +708,24 @@ public class PTuneActivity extends Activity {
 
         // Update TextView
         targetFrequency = Float.parseFloat((String)rb.getTag());
+        //perfectTune.setTuneFreq(targetFrequency);
         if (targetFrequency < 1000f)
             aim.setText(String.format("%.1f Hz", targetFrequency));
         else
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
 
+        //start the tune
+        if (mPlaySound != null) {
+//            mPlaySound.stop();
+//            mPlaySound = null;
+            mPlaySound.mOutputFreq = targetFrequency;
+        } else {
+            mPlaySound = new PlaySound();
+            mPlaySound.mOutputFreq = targetFrequency;
+            mPlaySound.start();
+        }
+
+        // ad mob
         if (mAdView != null)
             try {
                 if ((position > 1) && (position <= 5)) {

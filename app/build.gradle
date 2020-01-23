@@ -16,9 +16,9 @@ android {
         applicationId 'russianapp.tools.guitar_tunings'
         minSdkVersion 14
         targetSdkVersion 29
-        versionCode 7
-        versionName '7 '
-        versionNameSuffix = 'Mail fix1'
+        versionCode 8
+        versionName '8 '
+        versionNameSuffix = 'Sound '
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -56,4 +56,5 @@ dependencies {
     // mail
     implementation 'com.sun.mail:android-mail:1.5.5'
     implementation 'com.sun.mail:android-activation:1.5.5'
+
 }
