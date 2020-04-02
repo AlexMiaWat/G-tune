@@ -26,11 +26,13 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import components.PlaySound;
 import russianapp.tools.guitar_tunings.audio.CaptureThread;
 import russianapp.tools.guitar_tunings.graphics.DialView;
 
@@ -51,7 +53,7 @@ public class PTuneActivity extends Activity {
 
     //Sounds sounds;
     //PerfectTune perfectTune;
-    private PlaySound mPlaySound;
+//    private PlaySound mPlaySound;
 
     Activity main;
 
@@ -78,8 +80,17 @@ public class PTuneActivity extends Activity {
         tuner_txt = findViewById(R.id.tuning_text);
 
         // admob
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
         mAdView = findViewById(adView);
         adRequest = new AdRequest.Builder().build();
+
+//        List<String> testDeviceIds = Arrays.asList("6DE5FDE9C640128401A5C097587D9909");
+//        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+//        MobileAds.setRequestConfiguration(configuration);
 
         // Работаем с языками программы:
         languageSetings();
@@ -715,15 +726,15 @@ public class PTuneActivity extends Activity {
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
 
         //start the tune
-        if (mPlaySound != null) {
-//            mPlaySound.stop();
-//            mPlaySound = null;
-            mPlaySound.mOutputFreq = targetFrequency;
-        } else {
-            mPlaySound = new PlaySound();
-            mPlaySound.mOutputFreq = targetFrequency;
-            mPlaySound.start();
-        }
+//        if (mPlaySound != null) {
+////            mPlaySound.stop();
+////            mPlaySound = null;
+//            mPlaySound.mOutputFreq = targetFrequency;
+//        } else {
+//            mPlaySound = new PlaySound();
+//            mPlaySound.mOutputFreq = targetFrequency;
+//            mPlaySound.start();
+//        }
 
         // ad mob
         if (mAdView != null)

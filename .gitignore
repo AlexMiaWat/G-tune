@@ -1,0 +1,7 @@
+/app/.cxx/
+/app/build/
+/app/app.iml
+/.gradle/
+/.idea/
+/G-tune.iml
+/app/release/

@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "140326165743",
+    "firebase_url": "https://g-tune-eba76.firebaseio.com",
+    "project_id": "g-tune-eba76",
+    "storage_bucket": "g-tune-eba76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140326165743:android:bea073f20aaa46e2",
+        "android_client_info": {
+          "package_name": "russianapp.tools.guitar_tunings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140326165743-1c6o74odnnnp3ncksns2aftik9iv2uet.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAknsxxOSDtikGox8yGSYgul9Ra2Wm_o8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140326165743-1c6o74odnnnp3ncksns2aftik9iv2uet.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-9163301852390874~5151523404"
+    }
+  ],
+  "configuration_version": "1"
+}
