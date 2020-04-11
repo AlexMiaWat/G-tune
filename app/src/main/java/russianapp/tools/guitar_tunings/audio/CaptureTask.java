@@ -1,17 +1,11 @@
-/**
- * 
- */
 package russianapp.tools.guitar_tunings.audio;
 
-import russianapp.tools.guitar_tunings.PTuneActivity;
-
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder.AudioSource;
 import android.os.AsyncTask;
-import android.util.Log;
+
+import russianapp.tools.guitar_tunings.PTuneActivity;
 
 /**
  * @author weston
@@ -38,7 +32,7 @@ public class CaptureTask extends AsyncTask<Float, Float, Void> {
 		//AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, sRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
 		// Create storage container for read data.
-		byte buffer[] = new byte[bufferSize];
+		byte[] buffer = new byte[bufferSize];
 		
 		boolean isRunning = true;
 		

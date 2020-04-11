@@ -1,4 +1,8 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services' // Google Services Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics' // Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.firebase-perf' // Performance Monitoring plugin
+
 android {
     packagingOptions {
         pickFirst 'META-INF/LICENSE.txt' // picks the JavaMail license file
@@ -16,9 +20,9 @@ android {
         applicationId 'russianapp.tools.guitar_tunings'
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 8
-        versionName '8 '
-        versionNameSuffix = 'Virus 1'
+        versionCode 9
+        versionName '9 '
+        versionNameSuffix = 'Virus 2'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -47,12 +51,21 @@ android {
 
 dependencies {
 
+    // admob
+    implementation 'com.google.android.gms:play-services-ads:19.0.1'
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    // Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    // Firebase SDK for Crashlytics.
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta04'
+    // Firebase SDK Performance Monitoring library
+    implementation 'com.google.firebase:firebase-perf:19.0.6'
+    // Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-messaging:20.1.5'
 
     testImplementation 'junit:junit:4.13'
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation 'com.google.android.gms:play-services-ads:19.0.1'
     // Crash logger
     implementation 'com.github.RohitSurwase.UCE-Handler:uce_handler:1.4'
     // mail

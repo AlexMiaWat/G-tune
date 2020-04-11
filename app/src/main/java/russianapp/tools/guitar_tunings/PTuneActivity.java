@@ -27,8 +27,6 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -39,13 +37,11 @@ import russianapp.tools.guitar_tunings.graphics.DialView;
 import static russianapp.tools.guitar_tunings.R.id.adView;
 
 public class PTuneActivity extends Activity {
-    private FrameLayout bar;
-	private DialView dial;
+    private DialView dial;
 	private TextView topbar, tuner_txt, aim, hz;
     private double targetFrequency;
 	private CaptureThread mCapture;
-	private Handler mHandler;
-	private ImageButton language;
+    private ImageButton language;
     String lang;
     ArrayList<String> locs;
     AdView mAdView;
@@ -80,15 +76,12 @@ public class PTuneActivity extends Activity {
         tuner_txt = findViewById(R.id.tuning_text);
 
         // admob
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
         mAdView = findViewById(adView);
         adRequest = new AdRequest.Builder().build();
 
-//        List<String> testDeviceIds = Arrays.asList("6DE5FDE9C640128401A5C097587D9909");
+//        List<String> testDeviceIds = Collections.singletonList("6DE5FDE9C640128401A5C097587D9909");
 //        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
 //        MobileAds.setRequestConfiguration(configuration);
 
@@ -96,7 +89,7 @@ public class PTuneActivity extends Activity {
         languageSetings();
 
         // На передний план:
-        bar = findViewById(R.id.bar);
+        FrameLayout bar = findViewById(R.id.bar);
         try{if (bar != null) {
             bar.bringToFront();
         }}catch (NullPointerException e) {Log.d("PTuneActivity", "bar bringToFront called.");}
@@ -125,14 +118,14 @@ public class PTuneActivity extends Activity {
         Configuration c = r.getConfiguration();
         String[] loc = r.getAssets().getLocales();
 
-        locs = new ArrayList<String>();
+        locs = new ArrayList<>();
         locs.add("en");
         locs.add("es");
 
-        String temp = "Hello world";
+        StringBuilder temp = new StringBuilder("Hello world");
 
-        for (int i = 0; i < loc.length; i++) {
-            c.locale = new Locale(loc[i]);
+        for (String s : loc) {
+            c.locale = new Locale(s);
             Resources res = new Resources(getAssets(), metrics, c);
             String s1 = res.getString(R.string.hello_world);
 
@@ -140,37 +133,33 @@ public class PTuneActivity extends Activity {
             Resources res2 = new Resources(getAssets(), metrics, c);
             String s2 = res2.getString(R.string.hello_world);
 
-            if (!s1.equals(s2) && !temp.equals(s1)) {
-                locs.add(loc[i]);
-                temp += s1;
+            if (!s1.equals(s2) && !temp.toString().equals(s1)) {
+                locs.add(s);
+                temp.append(s1);
             }
         }
 
         // Текущий язык системы
         lang = Locale.getDefault().getLanguage();
 
-        if (lang == "") {
+        if (lang.equals("")) {
             lang = "en";
         }
 
         // Создаем обработчик нажатия смены языка
         language = findViewById(R.id.language);
-        View.OnClickListener oclBtnOk = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < locs.size(); i++) {
-                    if (locs.get(i).equals(lang) && i < locs.size()-1) {
-                        setLocate(locs.get(i + 1));
-                        lang = locs.get(i + 1);
+        View.OnClickListener oclBtnOk = v -> {
+            for (int i = 0; i < locs.size(); i++) {
+                if (locs.get(i).equals(lang) && i < locs.size() - 1) {
+                    setLocate(locs.get(i + 1));
+                    lang = locs.get(i + 1);
 
-                        break;
-                    }
-                    else if (locs.get(i).equals(lang) && i == locs.size()-1){
-                        setLocate(locs.get(0));
-                        lang = locs.get(0);
+                    break;
+                } else if (locs.get(i).equals(lang) && i == locs.size() - 1) {
+                    setLocate(locs.get(0));
+                    lang = locs.get(0);
 
-                        break;
-                    }
+                    break;
                 }
             }
         };
@@ -180,7 +169,8 @@ public class PTuneActivity extends Activity {
                 language.setOnClickListener(oclBtnOk);
                 setLocate(lang);
             }
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException ignored) {
+        }
     }
 
     public void setLocate(String languageToLoad) {
@@ -652,7 +642,7 @@ public class PTuneActivity extends Activity {
     private void TargetFrequencyStart() {
         updateTargetFrequency(); // Get radio button selection
 
-        mHandler = new Handler() {
+        Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message m) {
                 updateDisplay(m.getData().getFloat("Freq"));
@@ -681,7 +671,7 @@ public class PTuneActivity extends Activity {
     public void updateDisplay(double frequency) {
     	// Calculate difference between target and measured frequency,
     	// given that the measured frequency can be a factor of target.
-        double difference = 0;
+        double difference;
     	if (frequency > targetFrequency) {
     		int divisions = (int) (frequency / targetFrequency);
             double modified = targetFrequency * (double) divisions;
@@ -746,7 +736,8 @@ public class PTuneActivity extends Activity {
                     mAdView.destroy();
                     mAdView.setVisibility(View.GONE);
                 }
-            } catch (Exception e) {}
+            } catch (Exception ignored) {
+            }
     }
 
     public void onMenuClicked(View v) {
@@ -768,22 +759,19 @@ public class PTuneActivity extends Activity {
             builder.setMessage(getResources().getString(R.string.exit_frase));
 
             // Set click listener for alert dialog buttons
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch(which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            // User clicked the Yes button
+            DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        // User clicked the Yes button
 
-                            finish();
-                            ActivityCompat.finishAffinity(main);
-                            System.exit(0);
-                            break;
+                        finish();
+                        ActivityCompat.finishAffinity(main);
+                        System.exit(0);
+                        break;
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            // User clicked the No button
-                            break;
-                    }
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // User clicked the No button
+                        break;
                 }
             };
 
@@ -809,10 +797,10 @@ public class PTuneActivity extends Activity {
         StringBuilder result = new StringBuilder();
 
         result.append("MAIN ACTIVITY INFO: " + "\n");
-        result.append("Current lang: " + lang + "\n");
-        result.append("Current targetFrequency: " + targetFrequency + "\n");
+        result.append("Current lang: ").append(lang).append("\n");
+        result.append("Current targetFrequency: ").append(targetFrequency).append("\n");
         if (hz != null)
-            result.append("Current rb: " + hz.getText() + "\n");
+            result.append("Current rb: ").append(hz.getText()).append("\n");
 
         return result.toString();
     }

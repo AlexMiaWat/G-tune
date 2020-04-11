@@ -1,27 +1,3 @@
-/**
- * Copyright 2007 Sun Microsystems, Inc.  All Rights Reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
- */
 package russianapp.tools.guitar_tunings.audio;
 
 /**
@@ -33,7 +9,7 @@ package russianapp.tools.guitar_tunings.audio;
  * 
  * @author Karl Helgason
  */
-public final class FFT {
+final class FFT {
 
 	private double[] w;
 	private int fftFrameSize;
@@ -51,7 +27,7 @@ public final class FFT {
 	 * FFT converts from time-domain to frequency-domain, an inverse FFT
 	 * does the opposite.
 	 */
-	public FFT(int fftFrameSize, int sign) {
+	FFT(int fftFrameSize, int sign) {
 		w = computeTwiddleFactors(fftFrameSize, sign);
 
 		this.fftFrameSize = fftFrameSize;
@@ -73,20 +49,8 @@ public final class FFT {
 
 	}
 
-	/**
-	 * Transforms the input data from a time-domain array to a
-	 * frequency-domain array.
-	 * 
-	 * @param data Interlaced double array to be transformed.
-	 * The order is: real (sin), complex (cos).
-	 */
-	public void transform(double[] data) {
-		bitreversal(data);
-		calc(fftFrameSize, data, sign, w);
-	}
-
-	private final static double[] computeTwiddleFactors(int fftFrameSize,
-			int sign) {
+	private static double[] computeTwiddleFactors(int fftFrameSize,
+												  int sign) {
 
 		int imax = (int) (Math.log(fftFrameSize) / Math.log(2.));
 
@@ -139,8 +103,8 @@ public final class FFT {
 		return warray;
 	}
 
-	private final static void calc(int fftFrameSize, double[] data, int sign,
-			double[] w) {
+	private static void calc(int fftFrameSize, double[] data, int sign,
+							 double[] w) {
 
 		final int fftFrameSize2 = fftFrameSize << 1;
 
@@ -156,13 +120,12 @@ public final class FFT {
 
 	}
 
-	private final static void calcF2E(int fftFrameSize, double[] data, int i,
-			int nstep, double[] w) {
-		int jmax = nstep;
-		for (int n = 0; n < jmax; n += 2) {
+	private static void calcF2E(double[] data, int i,
+								int nstep, double[] w) {
+		for (int n = 0; n < nstep; n += 2) {
 			double wr = w[i++];
 			double wi = w[i++];
-			int m = n + jmax;
+			int m = n + nstep;
 			double datam_r = data[m];
 			double datam_i = data[m + 1];
 			double datan_r = data[n];
@@ -174,14 +137,13 @@ public final class FFT {
 			data[n] = datan_r + tempr;
 			data[n + 1] = datan_i + tempi;
 		}
-		return;
 
 	}
 
 	// Perform Factor-4 Decomposition with 3 * complex operators and 8 +/-
 	// complex operators
-	private final static void calcF4F(int fftFrameSize, double[] data, int i,
-			int nstep, double[] w) {
+	private static void calcF4F(int fftFrameSize, double[] data, int i,
+								int nstep, double[] w) {
 		final int fftFrameSize2 = fftFrameSize << 1; // 2*fftFrameSize;
 		// Factor-4 Decomposition
 
@@ -198,7 +160,7 @@ public final class FFT {
 			int nnstep = nstep << 1;
 			if (nnstep == fftFrameSize2) {
 				// Factor-4 Decomposition not possible
-				calcF2E(fftFrameSize, data, i, nstep, w);
+				calcF2E(data, i, nstep, w);
 				return;
 			}
 			nstep <<= 2;
@@ -342,14 +304,14 @@ public final class FFT {
 
 		}
 
-		calcF2E(fftFrameSize, data, i, nstep, w);
+		calcF2E(data, i, nstep, w);
 
 	}
 
 	// Perform Factor-4 Decomposition with 3 * complex operators and 8 +/-
 	// complex operators
-	private final static void calcF4I(int fftFrameSize, double[] data, int i,
-			int nstep, double[] w) {
+	private static void calcF4I(int fftFrameSize, double[] data, int i,
+								int nstep, double[] w) {
 		final int fftFrameSize2 = fftFrameSize << 1; // 2*fftFrameSize;
 		// Factor-4 Decomposition
 
@@ -366,7 +328,7 @@ public final class FFT {
 			int nnstep = nstep << 1;
 			if (nnstep == fftFrameSize2) {
 				// Factor-4 Decomposition not possible
-				calcF2E(fftFrameSize, data, i, nstep, w);
+				calcF2E(data, i, nstep, w);
 				return;
 			}
 			nstep <<= 2;
@@ -510,14 +472,14 @@ public final class FFT {
 
 		}
 
-		calcF2E(fftFrameSize, data, i, nstep, w);
+		calcF2E(data, i, nstep, w);
 
 	}
 
 	// Perform Factor-4 Decomposition with 3 * complex operators and 8 +/-
 	// complex operators
-	private final static void calcF4FE(int fftFrameSize, double[] data, int i,
-			int nstep, double[] w) {
+	private static void calcF4FE(int fftFrameSize, double[] data, int i,
+								 int nstep, double[] w) {
 		final int fftFrameSize2 = fftFrameSize << 1; // 2*fftFrameSize;
 		// Factor-4 Decomposition
 
@@ -528,7 +490,7 @@ public final class FFT {
 			int nnstep = nstep << 1;
 			if (nnstep == fftFrameSize2) {
 				// Factor-4 Decomposition not possible
-				calcF2E(fftFrameSize, data, i, nstep, w);
+				calcF2E(data, i, nstep, w);
 				return;
 			}
 			nstep <<= 2;
@@ -610,8 +572,8 @@ public final class FFT {
 
 	// Perform Factor-4 Decomposition with 3 * complex operators and 8 +/-
 	// complex operators
-	private final static void calcF4IE(int fftFrameSize, double[] data, int i,
-			int nstep, double[] w) {
+	private static void calcF4IE(int fftFrameSize, double[] data, int i,
+								 int nstep, double[] w) {
 		final int fftFrameSize2 = fftFrameSize << 1; // 2*fftFrameSize;
 		// Factor-4 Decomposition
 
@@ -622,7 +584,7 @@ public final class FFT {
 			int nnstep = nstep << 1;
 			if (nnstep == fftFrameSize2) {
 				// Factor-4 Decomposition not possible
-				calcF2E(fftFrameSize, data, i, nstep, w);
+				calcF2E(data, i, nstep, w);
 				return;
 			}
 			nstep <<= 2;
@@ -702,7 +664,19 @@ public final class FFT {
 
 	}
 
-	private final void bitreversal(double[] data) {
+	/**
+	 * Transforms the input data from a time-domain array to a
+	 * frequency-domain array.
+	 *
+	 * @param data Interlaced double array to be transformed.
+	 *             The order is: real (sin), complex (cos).
+	 */
+	void transform(double[] data) {
+		bitreversal(data);
+		calc(fftFrameSize, data, sign, w);
+	}
+
+	private void bitreversal(double[] data) {
 		if (fftFrameSize < 4)
 			return;
 

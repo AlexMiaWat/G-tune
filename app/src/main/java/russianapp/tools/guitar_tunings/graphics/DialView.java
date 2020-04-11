@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -29,7 +28,7 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 		SurfaceHolder holder = getHolder();
 		holder.addCallback(this);
 
-		mThread = new DialThread(holder, context, new Handler());
+        mThread = new DialThread(holder, context);
 	}
 
 	@Override
@@ -44,36 +43,26 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 				mThread.setRunning(true);
 				mThread.start();
 			}
-		} catch (Exception e) {
+        } catch (Exception ignored) {
 		}
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder arg0) {
-		boolean retry = false;
 		mThread.setRunning(false);
-		while (retry) {
-			try {
-				mThread.join();
-				retry = false;
-			} catch (InterruptedException e) {
-				// nothing
-			}
-		}
 	}
 
 	class DialThread extends Thread {
 
-		private SurfaceHolder mSurfaceHolder;
+        private final SurfaceHolder mSurfaceHolder;
 		private boolean isRunning = false;
 		private double mValue = -90;
 		private double mPos = -90;
-        private Paint paint;
 
 		/** The background image. */
 		private Bitmap mBackgroundImage;
 
-		public DialThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
+        DialThread(SurfaceHolder surfaceHolder, Context context) {
 			mSurfaceHolder = surfaceHolder;
 			mBackgroundImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.dial);
 		}
@@ -138,7 +127,7 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 
 				try{
                     if (resizedBitmap != null) {
-                        paint = new Paint();
+                        Paint paint = new Paint();
                         canvas.drawBitmap(resizedBitmap, 0, 0, paint);
 
                         // Draw needle
@@ -152,10 +141,9 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 						canvas.rotate((float) mPos, startX, startY);
                         canvas.drawLine(startX, startY, stopX, stopY, linePaint);
                         canvas.restore();
-                    }else{
-						//startApp(this);
-                    }
-                }catch (NullPointerException e) {
+                    }//startApp(this);
+
+                } catch (NullPointerException e) {
 					//startApp(Global)
                 }
         }
@@ -171,7 +159,7 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 
-		public void setSurfaceSize(int width, int height) {
+        void setSurfaceSize(int width, int height) {
 			synchronized(mSurfaceHolder) {
 				// TODO: It might be nice to store these values.
 				// TODO: Center the image in the available space.
@@ -189,11 +177,11 @@ public class DialView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 
-		public void setRunning(boolean b) {
+        void setRunning(boolean b) {
 			isRunning = b;
 		}
 
-		public void setValue(double f, int sv, int tp) {
+        void setValue(double f, int sv, int tp) {
 			if (f < -90)
 	    		mValue = -90;
 			else if (f > 90)

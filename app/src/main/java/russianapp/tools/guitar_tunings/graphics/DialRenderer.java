@@ -1,5 +1,9 @@
 package russianapp.tools.guitar_tunings.graphics;
 
+import android.content.Context;
+import android.opengl.GLSurfaceView.Renderer;
+import android.opengl.GLU;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -7,19 +11,15 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
-import android.opengl.GLSurfaceView.Renderer;
-import android.opengl.GLU;
-
 public class DialRenderer implements Renderer {
 
 	private Context context;
 	private DialFace face;
 	private FloatBuffer triangleVB;
-	public float mAngle;
+	float mAngle;
 
 	/** Constructor to set the handed over context */
-	public DialRenderer(Context context) {
+	DialRenderer(Context context) {
 		this.context = context;
 		this.face = new DialFace();
 	}
@@ -108,7 +108,7 @@ public class DialRenderer implements Renderer {
 
 	private void initShapes(){
 
-		float triangleCoords[] = {
+		float[] triangleCoords = {
 				// X, Y, Z
 				-0.01f, 0f, 0,
 				0.01f, 0f, 0,

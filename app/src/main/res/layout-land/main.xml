@@ -263,7 +263,7 @@
                         android:layout_gravity="bottom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        ads:adSize="BANNER"
+                        ads:adSize="SMART_BANNER"
                         ads:adUnitId="@string/publisher_id">
                     </com.google.android.gms.ads.AdView>
             </LinearLayout>

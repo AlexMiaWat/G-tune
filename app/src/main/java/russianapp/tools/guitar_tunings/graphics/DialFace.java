@@ -1,5 +1,10 @@
 package russianapp.tools.guitar_tunings.graphics;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.opengl.GLUtils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -8,14 +13,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 import russianapp.tools.guitar_tunings.R;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLUtils;
-
-public class DialFace {
+class DialFace {
 	private FloatBuffer vertexBuffer; // buffer holding the vertices
-	private float vertices[] = { 
+	private float[] vertices = {
 			-1.0f, -1.0f, 0.0f, 	// V1 - bottom left
 			-1.0f, 1.0f, 0.0f, 		// V2 - top left
 			1.0f, -1.0f, 0.0f, 		// V3 - bottom right
@@ -23,18 +23,11 @@ public class DialFace {
 	};
 	
 	private FloatBuffer textureBuffer;	// buffer holding the texture coordinates
-	private float texture[] = {
-			// Mapping coordinates for the vertices
-			0.0f, 1.0f,		// top left		(V2)
-			0.0f, 0.0f,		// bottom left	(V1)
-			1.0f, 1.0f,		// top right	(V4)
-			1.0f, 0.0f		// bottom right	(V3)
-	};
-	
+
 	/** The texture pointer */
 	private int[] textures = new int[1];
 
-	public DialFace() {
+	DialFace() {
 		// a float has 4 bytes so we allocate for each coordinate 4 bytes
 		ByteBuffer vertexByteBuffer = ByteBuffer
 				.allocateDirect(vertices.length * 4);
@@ -48,7 +41,19 @@ public class DialFace {
 
 		// set the cursor position to the beginning of the buffer
 		vertexBuffer.position(0);
-		
+
+		// Mapping coordinates for the vertices
+		// top left		(V2)
+		// bottom left	(V1)
+		// top right	(V4)
+		// bottom right	(V3)
+		float[] texture = {
+				// Mapping coordinates for the vertices
+				0.0f, 1.0f,        // top left		(V2)
+				0.0f, 0.0f,        // bottom left	(V1)
+				1.0f, 1.0f,        // top right	(V4)
+				1.0f, 0.0f        // bottom right	(V3)
+		};
 		vertexByteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
 		vertexByteBuffer.order(ByteOrder.nativeOrder());
 		textureBuffer = vertexByteBuffer.asFloatBuffer();
@@ -56,7 +61,7 @@ public class DialFace {
 		textureBuffer.position(0);
 	}
 
-	public void loadGLTexture(GL10 gl, Context context) {
+	void loadGLTexture(GL10 gl, Context context) {
 		// loading texture
 		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.dial);
@@ -78,7 +83,7 @@ public class DialFace {
 	}
 
 	/** The draw method for the dial face with the GL context */
-	public void draw(GL10 gl) {
+	void draw(GL10 gl) {
 		
 		// bind the previously generated texture
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);

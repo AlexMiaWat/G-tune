@@ -8,9 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
@@ -43,12 +41,7 @@ public class StartActivity extends Activity {
         }
 
         ImageView imageView = findViewById(R.id.imageView);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityCompat.requestPermissions(main, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-            }
-        });
+        imageView.setOnClickListener(v -> ActivityCompat.requestPermissions(main, new String[]{Manifest.permission.RECORD_AUDIO}, 1));
     }
 
     @Override
@@ -68,16 +61,13 @@ public class StartActivity extends Activity {
     /** Called when the user taps PERMISSION_GRANTED */
     public void PERMISSION_GRANTED() {
         // Задержка
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Intent intent = new Intent(getApplicationContext(), PTuneActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        new Handler().postDelayed(() -> {
+            try {
+                Intent intent = new Intent(getApplicationContext(), PTuneActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }, 500);
     }
@@ -97,21 +87,18 @@ public class StartActivity extends Activity {
             builder.setMessage(getResources().getString(R.string.exit_frase));
 
             // Set click listener for alert dialog buttons
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch(which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            // User clicked the Yes button
-                            finish();
-                            ActivityCompat.finishAffinity(main);
-                            System.exit(0);
-                            break;
+            DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        // User clicked the Yes button
+                        finish();
+                        ActivityCompat.finishAffinity(main);
+                        System.exit(0);
+                        break;
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            // User clicked the No button
-                            break;
-                    }
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // User clicked the No button
+                        break;
                 }
             };
 

@@ -10,9 +10,9 @@ package russianapp.tools.guitar_tunings.audio;
  */
 public class Spectrum {
 
-	double[] spectrum;
-	double[] samples;
-	int sampleRate;
+	private double[] spectrum;
+	private double[] samples;
+	private int sampleRate;
 
 	/**
 	 * Creates a spectrum from the provided byte data and given sample rate.
@@ -21,7 +21,7 @@ public class Spectrum {
 	 * from an audio stream.
 	 * @param sampleRateInHz Sample rate used to record sample data.
 	 */
-	public Spectrum(byte[] data, int sampleRateInHz) {
+	Spectrum(byte[] data, int sampleRateInHz) {
 		this.sampleRate = sampleRateInHz;
 		buildSpectrum(data);
 	}
@@ -35,25 +35,15 @@ public class Spectrum {
 	}
 
 	/**
-	 * Builds the frequency-domain spectrum from sampled audio data.
-	 * 
-	 * @param data Non-interlaced byte array of sample data.
+	 * Applies a Hanning window to the supplied sample data.
+	 *
+	 * @param samples Interlaced array of sample data.
 	 */
-	public void buildSpectrum(byte[] data) {
-		// Create interlaced double array of complex numbers to hold sample data.
-		samples = byteToDouble(data);
-		
-		// Apply window function to sample data.
-		hanningWindow(samples);
-
-		// Build FFT.
-		FFT fft = new FFT(samples.length/2,-1);
-		fft.transform(samples);
-
-		// Build frequency spectrum from interlaced results data.
-		spectrum = new double[samples.length/2];
-		for (int i = 0; i < samples.length; i+=2)
-			spectrum[i/2] = Math.sqrt(samples[i] * samples[i]+ samples[i+1] * samples[i+1]);
+	private static void hanningWindow(double[] samples) {
+		for (int i = 0; i < samples.length; i += 2) {
+			double hanning = 0.5 - 0.5 * Math.cos((2 * Math.PI * (i / 2)) / (samples.length / 2) - 1);
+			samples[i] *= hanning;
+		}
 	}
 
 	/**
@@ -81,15 +71,25 @@ public class Spectrum {
 	}
 	
 	/**
-	 * Applies a Hanning window to the supplied sample data.
-	 * 
-	 * @param samples Interlaced array of sample data.
+	 * Builds the frequency-domain spectrum from sampled audio data.
+	 *
+	 * @param data Non-interlaced byte array of sample data.
 	 */
-	public static void hanningWindow(double[] samples) {
-		for (int i = 0; i < samples.length; i+=2) {
-			double hanning = 0.5 - 0.5 * Math.cos((2*Math.PI*(i/2)) / (samples.length/2) - 1);
-			samples[i] *= hanning;
-		}
+	private void buildSpectrum(byte[] data) {
+		// Create interlaced double array of complex numbers to hold sample data.
+		samples = byteToDouble(data);
+
+		// Apply window function to sample data.
+		hanningWindow(samples);
+
+		// Build FFT.
+		FFT fft = new FFT(samples.length / 2, -1);
+		fft.transform(samples);
+
+		// Build frequency spectrum from interlaced results data.
+		spectrum = new double[samples.length / 2];
+		for (int i = 0; i < samples.length; i += 2)
+			spectrum[i / 2] = Math.sqrt(samples[i] * samples[i] + samples[i + 1] * samples[i + 1]);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Spectrum {
 	 * @return Float value that represents the frequency. Float
 	 * accuracy is generally all that is needed for typical purposes.
 	 */
-	public float getFrequency() {
+	float getFrequency() {
 		float frequency = 0;
 		float peak = 0;
 		
@@ -158,7 +158,7 @@ public class Spectrum {
 	 * @return Float value that represents the frequency. Float
 	 * accuracy is generally all that is needed for typical purposes.
 	 */
-	public float getFrequency(float target) {
+	float getFrequency(float target) {
 		float frequency = 0, peak = 0;
 		
 		// Calculate lower and upper range index values. Lower = 1/2 target, upper = target * 2.
@@ -178,7 +178,7 @@ public class Spectrum {
 					average += spectrum[i];
 			}
 		}
-		average /= spectrum.length/2;
+		average /= (double) spectrum.length / 2;
 		
 		// Find the peak with highest magnitude within the given range.
 		int max = -1;

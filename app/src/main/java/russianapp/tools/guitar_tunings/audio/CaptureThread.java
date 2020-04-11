@@ -21,7 +21,7 @@ public class CaptureThread extends Thread {
 	@Override
 	public void run() {
 		int sRate = 44100;
-		int bufferSize = 65536;
+		int bufferSize;
 		bufferSize = 32768;
 
 		AudioRecord recorder = new AudioRecord(AudioSource.MIC,
@@ -29,7 +29,7 @@ public class CaptureThread extends Thread {
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 		
 		// Create storage container for read data.
-		byte buffer[] = new byte[bufferSize];
+		byte[] buffer = new byte[bufferSize];
 
 		try {
 			recorder.startRecording();

@@ -13,7 +13,7 @@ Java_russianapp_tools_guitar_1tunings_DefaultErrorActivity_getSMTPAUTHUSER(JNIEn
 JNIEXPORT jstring JNICALL
 Java_russianapp_tools_guitar_1tunings_DefaultErrorActivity_getSMTPAUTHPWD(JNIEnv *env, jobject instance) {
 
-    return (*env)->NewStringUTF(env, "WWRmaDQ5OWRoMjAxNg==");
+    return (*env)->NewStringUTF(env, "WWRmaDQ5OWRoMjAyMA==");
 }
 
 JNIEXPORT jstring JNICALL
