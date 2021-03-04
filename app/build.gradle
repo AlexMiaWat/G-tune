@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services' // Google Services Gradle plugin
 apply plugin: 'com.google.firebase.crashlytics' // Crashlytics Gradle plugin
-apply plugin: 'com.google.firebase.firebase-perf' // Performance Monitoring plugin
 
 android {
     packagingOptions {
@@ -15,20 +14,16 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
     }
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId 'russianapp.tools.guitar_tunings'
         minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 9
-        versionName '9 '
-        versionNameSuffix = 'Virus 2'
+        targetSdkVersion 30
+        versionCode 10
+        versionName '1.0 '
+        versionNameSuffix = 'Bull power 1'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", 'x86_64'
-        }
     }
     buildTypes {
         release {
@@ -37,38 +32,54 @@ android {
         }
     }
 
+    compileSdkVersion 30
+    buildToolsVersion = '30.0.2'
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion = '28.0.3'
-    externalNativeBuild {
-        ndkBuild {
-            path 'src/main/jni/Android.mk'
+
+    configurations {
+        all {
+            exclude module: 'junit'
         }
     }
 }
 
 dependencies {
 
-    // admob
-    implementation 'com.google.android.gms:play-services-ads:19.0.1'
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
-    // Firebase SDK for Google Analytics
-    implementation 'com.google.firebase:firebase-analytics:17.3.0'
-    // Firebase SDK for Crashlytics.
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta04'
-    // Firebase SDK Performance Monitoring library
-    implementation 'com.google.firebase:firebase-perf:19.0.6'
-    // Firebase Cloud Messaging
-    implementation 'com.google.firebase:firebase-messaging:20.1.5'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    testImplementation 'junit:junit:4.13.2'
 
-    testImplementation 'junit:junit:4.13'
     implementation 'androidx.multidex:multidex:2.0.1'
 
     // Crash logger
     implementation 'com.github.RohitSurwase.UCE-Handler:uce_handler:1.4'
-    // mail
-    implementation 'com.sun.mail:android-mail:1.5.5'
-    implementation 'com.sun.mail:android-activation:1.5.5'
+    // json-simple
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    // jsoup
+    implementation 'org.jsoup:jsoup:1.13.1'
+    // internet connection
+    implementation 'com.novoda:merlin:1.2.0'
+    // Crash logger
+    implementation 'com.github.RohitSurwase.UCE-Handler:uce_handler:1.4'
+    // json-simple
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // admob
+    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+    implementation 'com.google.firebase:firebase-dynamic-links:19.1.1'
+    implementation 'com.google.firebase:firebase-ads:19.7.0'
+
+    // Firebase SDK for Google Analytics
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
+    // Firebase SDK for Crashlytics.
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
+    // Firebase SDK Performance Monitoring library
+    implementation 'com.google.firebase:firebase-perf:19.1.1'
 }

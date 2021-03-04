@@ -138,7 +138,7 @@
                     android:paddingLeft="5dp"
                     android:text="@string/e_std"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/GrreenMan"
+                    android:textColor="@color/GreenMan"
                     android:textStyle="bold"
                     tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded,RtlSymmetry" />
 

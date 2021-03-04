@@ -1,9 +1,9 @@
 package russianapp.tools.guitar_tunings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,25 +27,36 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import russianapp.tools.guitar_tunings.audio.CaptureThread;
+import russianapp.tools.guitar_tunings.components.Global;
+import russianapp.tools.guitar_tunings.csp.CentralServicePortalManager;
+import russianapp.tools.guitar_tunings.csp.OpenUDID_manager;
 import russianapp.tools.guitar_tunings.graphics.DialView;
 
 import static russianapp.tools.guitar_tunings.R.id.adView;
 
-public class PTuneActivity extends Activity {
+public class MainActivity extends Activity {
     private DialView dial;
-	private TextView topbar, tuner_txt, aim, hz;
+    private TextView topBar, tuner_txt, aim, hz;
     private double targetFrequency;
-	private CaptureThread mCapture;
+    private CaptureThread mCapture;
     private ImageButton language;
     String lang;
-    ArrayList<String> locs;
+    ArrayList<String> locations;
     AdView mAdView;
     AdRequest adRequest;
+
+    public boolean isItLastAppVersion = true;
+    public boolean firstSessionMessage = true;
+    public String token = "";
+    public CentralServicePortalManager cspMng;
+
+    int idMenuSelected = 2131230892;
 
     //Sounds sounds;
     //PerfectTune perfectTune;
@@ -69,10 +80,10 @@ public class PTuneActivity extends Activity {
 
         // Set global variables
         globalVariable = (Global) getApplicationContext();
-        globalVariable.pTuneActivity = this;
+        globalVariable.mainActivity = this;
 
         dial = findViewById(R.id.dial);
-        topbar = findViewById(R.id.textView1);
+        topBar = findViewById(R.id.textView1);
         tuner_txt = findViewById(R.id.tuning_text);
 
         // admob
@@ -85,9 +96,6 @@ public class PTuneActivity extends Activity {
 //        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
 //        MobileAds.setRequestConfiguration(configuration);
 
-        // Работаем с языками программы:
-        languageSetings();
-
         // На передний план:
         FrameLayout bar = findViewById(R.id.bar);
         try{if (bar != null) {
@@ -97,67 +105,75 @@ public class PTuneActivity extends Activity {
         aim = findViewById(R.id.aim);
         try{if (aim != null) {
             aim.bringToFront();
-        }}catch (NullPointerException e) {Log.d("PTuneActivity", "aim bringToFront called.");}
+        }
+        } catch (NullPointerException e) {
+            Log.d("PTuneActivity", "aim bringToFront called.");
+        }
 
         hz = findViewById(R.id.Hz);
-        try{if (hz != null) {
-            hz.bringToFront();
-        }}catch (NullPointerException e) {Log.d("PTuneActivity", "bar bringToFront called.");}
+        try {
+            if (hz != null) {
+                hz.bringToFront();
+            }
+        } catch (NullPointerException e) {
+            Log.d("PTuneActivity", "bar bringToFront called.");
+        }
         // Все эти элементы <----
 
         //Запускаем измерение частоты звука:
+
+        // Работаем с языками программы:
+        languageSettings();
+
+        // Класический строй
+        e_std_Clicked();
+
         TargetFrequencyStart();
+
+        // All components:
+
+        // device id
+        OpenUDID_manager.sync(this);
+
+        // Central Service Portal
+        try {
+            cspMng = new CentralServicePortalManager(this);
+            cspMng.mainActivity = this;
+            cspMng.doServiceTask("firstConnection", "First connection");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Работаем с языками программы:
-    final void languageSetings() {
+    final void languageSettings() {
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        Resources r = getResources();
-        Configuration c = r.getConfiguration();
-        String[] loc = r.getAssets().getLocales();
 
-        locs = new ArrayList<>();
-        locs.add("en");
-        locs.add("es");
-
-        StringBuilder temp = new StringBuilder("Hello world");
-
-        for (String s : loc) {
-            c.locale = new Locale(s);
-            Resources res = new Resources(getAssets(), metrics, c);
-            String s1 = res.getString(R.string.hello_world);
-
-            c.locale = new Locale("");
-            Resources res2 = new Resources(getAssets(), metrics, c);
-            String s2 = res2.getString(R.string.hello_world);
-
-            if (!s1.equals(s2) && !temp.toString().equals(s1)) {
-                locs.add(s);
-                temp.append(s1);
-            }
-        }
+        locations = new ArrayList<>();
+        locations.add("en");
+        locations.add("es");
+        locations.add("ru");
 
         // Текущий язык системы
         lang = Locale.getDefault().getLanguage();
 
-        if (lang.equals("")) {
+        if (lang.equals("") || !locations.contains(lang))
             lang = "en";
-        }
 
         // Создаем обработчик нажатия смены языка
         language = findViewById(R.id.language);
         View.OnClickListener oclBtnOk = v -> {
-            for (int i = 0; i < locs.size(); i++) {
-                if (locs.get(i).equals(lang) && i < locs.size() - 1) {
-                    setLocate(locs.get(i + 1));
-                    lang = locs.get(i + 1);
+            for (int i = 0; i < locations.size(); i++) {
+                if (locations.get(i).equals(lang) && i < locations.size() - 1) {
+                    setLocate(locations.get(i + 1));
+                    lang = locations.get(i + 1);
 
                     break;
-                } else if (locs.get(i).equals(lang) && i == locs.size() - 1) {
-                    setLocate(locs.get(0));
-                    lang = locs.get(0);
+                } else if (locations.get(i).equals(lang) && i == locations.size() - 1) {
+                    setLocate(locations.get(0));
+                    lang = locations.get(0);
 
                     break;
                 }
@@ -169,11 +185,19 @@ public class PTuneActivity extends Activity {
                 language.setOnClickListener(oclBtnOk);
                 setLocate(lang);
             }
-        } catch (NullPointerException ignored) {
+        } catch (Exception e) {
+            Log.println(Log.ERROR, "errrr:", e.getMessage());
         }
+
     }
 
     public void setLocate(String languageToLoad) {
+
+        cspMng.doServiceTask("languageSelected", "Selected: " + languageToLoad);
+
+        // Flag
+        language.setImageResource(this.getResources().getIdentifier("drawable/" + languageToLoad + "_", null, this.getPackageName()));
+
         // Get Locale from string "en", "ru"
         Locale locale = new Locale(languageToLoad.toLowerCase());
         Locale.setDefault(locale);
@@ -192,11 +216,7 @@ public class PTuneActivity extends Activity {
         // Обновляем меню
         this.invalidateOptionsMenu();
 
-        e_std_Clicked();
-
-        updateTargetFrequency();
-
-        language.setImageResource(this.getResources().getIdentifier("drawable/" + languageToLoad + "_", null, this.getPackageName()));
+        selectMenu();
     }
 
     @Override
@@ -235,6 +255,7 @@ public class PTuneActivity extends Activity {
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
     private void e_std_Clicked(){
         RadioButton rb;
         rb = findViewById(R.id.radio0);
@@ -255,6 +276,7 @@ public class PTuneActivity extends Activity {
         rb = findViewById(R.id.radio5);
         rb.setText(getString(R.string._6th) + " E");
         rb.setTag("82.4069");
+
         updateTargetFrequency();
 
         tuner_txt.setText(R.string.e_std);
@@ -262,10 +284,21 @@ public class PTuneActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //curentTune = item;
+        RadioGroup rg = findViewById(R.id.radioGroup1);
+        int selected = rg.getCheckedRadioButtonId();
+        RadioButton rb = findViewById(selected);
+        int position = rg.indexOfChild(rb);
 
+        cspMng.doServiceTask("tuneProperties", "Selected: " + item.getTitle() + " : " + (int) (position + 1));
+        idMenuSelected = item.getItemId();
+
+        return selectMenu();
+    }
+
+    @SuppressLint({"NonConstantResourceId", "SetTextI18n"})
+    private boolean selectMenu() {
         RadioButton rb;
-        switch (item.getItemId()) {
+        switch (idMenuSelected) {
             case R.id.e_std:
                 e_std_Clicked();
                 return true;
@@ -635,14 +668,14 @@ public class PTuneActivity extends Activity {
                 tuner_txt.setText(R.string.bass);
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return true;
         }
     }
 
     private void TargetFrequencyStart() {
         updateTargetFrequency(); // Get radio button selection
 
-        Handler mHandler = new Handler() {
+        @SuppressLint("HandlerLeak") Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message m) {
                 updateDisplay(m.getData().getFloat("Freq"));
@@ -654,8 +687,9 @@ public class PTuneActivity extends Activity {
         mCapture.start();
     }
 
+    @SuppressLint("DefaultLocale")
     private void updateTargetFrequency() {
-    	// Grab the selected radio button tag.
+        // Grab the selected radio button tag.
         RadioGroup rg = findViewById(R.id.radioGroup1);
         int selected = rg.getCheckedRadioButtonId();
         RadioButton rb = findViewById(selected);
@@ -668,36 +702,38 @@ public class PTuneActivity extends Activity {
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
     }
 
+    @SuppressLint("DefaultLocale")
     public void updateDisplay(double frequency) {
-    	// Calculate difference between target and measured frequency,
-    	// given that the measured frequency can be a factor of target.
+        // Calculate difference between target and measured frequency,
+        // given that the measured frequency can be a factor of target.
         double difference;
-    	if (frequency > targetFrequency) {
-    		int divisions = (int) (frequency / targetFrequency);
+        if (frequency > targetFrequency) {
+            int divisions = (int) (frequency / targetFrequency);
             double modified = targetFrequency * (double) divisions;
-    		if (frequency - modified > targetFrequency / 2) {
-    			modified += targetFrequency;
-    			divisions++;
-    		}
+            if (frequency - modified > targetFrequency / 2) {
+                modified += targetFrequency;
+                divisions++;
+            }
             difference = (frequency - modified) / (double) divisions;
-    	} else {
-    		// If target is greater than measured, just use difference.
-    		difference = frequency - targetFrequency;
-    	}
+        } else {
+            // If target is greater than measured, just use difference.
+            difference = frequency - targetFrequency;
+        }
 
         double relativeFrequency = targetFrequency + difference;
-    	
-    	// Update TextView
-    	if (relativeFrequency < 1000f)
-            topbar.setText(String.format("%.1f Hz", relativeFrequency));
-		else
-            topbar.setText(String.format("%.2f kHz", relativeFrequency/1000));
 
-    	// Update DialView
+        // Update TextView
+        if (relativeFrequency < 1000f)
+            topBar.setText(String.format("%.1f Hz", relativeFrequency));
+        else
+            topBar.setText(String.format("%.2f kHz", relativeFrequency / 1000));
+
+        // Update DialView
         double value = difference / (targetFrequency / 2) * 90;
         dial.update(value, 0, 0);
     }
-    
+
+    @SuppressLint("DefaultLocale")
     public void onRadioButtonClicked(View v) {
         // Perform action on clicks
         RadioButton rb = (RadioButton) v;
@@ -729,15 +765,28 @@ public class PTuneActivity extends Activity {
         // ad mob
         if (mAdView != null)
             try {
-                if ((position > 1) && (position <= 5)) {
+                if ((position == 2) || (position == 3) || (position == 5)) {
                     mAdView.loadAd(adRequest);
                     mAdView.setVisibility(View.VISIBLE);
+
                 } else {
                     mAdView.destroy();
                     mAdView.setVisibility(View.GONE);
+
+                    View parentLayout = findViewById(android.R.id.content);
+                    if (!isItLastAppVersion && firstSessionMessage)
+                        Snackbar.make(parentLayout, getResources().getString(R.string.update_to_latest_version), Snackbar.LENGTH_INDEFINITE)
+                                .setAction(getResources().getString(R.string.Update_now), view -> {
+                                            CentralServicePortalManager.getLastPackage(main, BuildConfig.APPLICATION_ID);
+                                            firstSessionMessage = false;
+                                        }
+                                ).show();
                 }
             } catch (Exception ignored) {
             }
+
+
+        cspMng.doServiceTask("tuneString", "Selected: " + tuner_txt.getText() + " : " + (int) (position + 1));
     }
 
     public void onMenuClicked(View v) {

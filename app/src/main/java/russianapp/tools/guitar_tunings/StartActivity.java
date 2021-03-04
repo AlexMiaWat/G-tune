@@ -28,14 +28,13 @@ public class StartActivity extends Activity {
 
         main = this;
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             // Permission already Granted
-            //Do your work here
-            //Perform operations here only which requires permission
+            // Do your work here
+            // Perform operations here only which requires permission
 
-            //Запускаем
-            PERMISSION_GRANTED();
+            // Запускаем
+            RECORD_AUDIO_PERMISSION_GRANTED();
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         }
@@ -53,17 +52,19 @@ public class StartActivity extends Activity {
                 //Perform operations here only which requires permission
 
                 //Запускаем
-                PERMISSION_GRANTED();
+                RECORD_AUDIO_PERMISSION_GRANTED();
             }
         }
     }
 
-    /** Called when the user taps PERMISSION_GRANTED */
-    public void PERMISSION_GRANTED() {
+    /**
+     * Called when the user taps RECORD_AUDIO_PERMISSION_GRANTED
+     */
+    public void RECORD_AUDIO_PERMISSION_GRANTED() {
         // Задержка
         new Handler().postDelayed(() -> {
             try {
-                Intent intent = new Intent(getApplicationContext(), PTuneActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             } catch (Exception e) {

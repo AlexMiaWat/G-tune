@@ -21,11 +21,11 @@ final class FFT {
 	 * Creates an FFT with the specified frame size.
 	 * 
 	 * @param fftFrameSize The level of accuracy to use for the transform.
-	 * The highest level of accuracy is reached when the frame size equals the
-	 * number of real components in the input data.
-	 * @param sign -1 is FFT, 1 is IFFT (inverse FFT). A standard
-	 * FFT converts from time-domain to frequency-domain, an inverse FFT
-	 * does the opposite.
+     * The highest level of accuracy is reached when the frame size equals the
+     * number of real russianapp.tools.guitar_tunings.components in the input data.
+     * @param sign -1 is FFT, 1 is IFFT (inverse FFT). A standard
+     * FFT converts from time-domain to frequency-domain, an inverse FFT
+     * does the opposite.
 	 */
 	FFT(int fftFrameSize, int sign) {
 		w = computeTwiddleFactors(fftFrameSize, sign);

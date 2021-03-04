@@ -1,4 +1,4 @@
-package components;
+package russianapp.tools.guitar_tunings.components;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;

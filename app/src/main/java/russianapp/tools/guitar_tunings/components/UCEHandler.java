@@ -1,4 +1,4 @@
-package components;
+package russianapp.tools.guitar_tunings.components;
 
 /*
  *
@@ -35,9 +35,6 @@ import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Deque;
 import java.util.Locale;
-
-import russianapp.tools.guitar_tunings.DefaultErrorActivity;
-import russianapp.tools.guitar_tunings.Global;
 
 /**
  * Created by Rohit.
@@ -84,70 +81,61 @@ public final class UCEHandler {
                     }
                     application = (Global) context.getApplicationContext();
                     //Setup UCE Handler.
-                    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                        @Override
-                        public void uncaughtException(Thread thread, final Throwable throwable) {
-                            if (isUCEHEnabled) {
-                                Log.e(TAG, "App crashed, executing UCEHandler's UncaughtExceptionHandler", throwable);
-                                if (hasCrashedInTheLastSeconds(application)) {
-                                    Log.e(TAG, "App already crashed recently, not starting custom error activity because we could enter a restart loop. Are you sure that your app does not crash directly on init?", throwable);
+                    Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+                        if (isUCEHEnabled) {
+                            Log.e(TAG, "App crashed, executing UCEHandler's UncaughtExceptionHandler", throwable);
+                            if (hasCrashedInTheLastSeconds(application)) {
+                                Log.e(TAG, "App already crashed recently, not starting custom error activity because we could enter a restart loop. Are you sure that your app does not crash directly on init?", throwable);
+                                if (oldHandler != null) {
+                                    oldHandler.uncaughtException(thread, throwable);
+                                    return;
+                                }
+                            } else {
+                                setLastCrashTimestamp(application, new Date().getTime());
+                                if (!isInBackground || isBackgroundMode) {
+                                    final Intent intent = new Intent(application, DefaultErrorActivity.class);
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    throwable.printStackTrace(pw);
+                                    String stackTraceString = sw.toString();
+                                    if (stackTraceString.length() > MAX_STACK_TRACE_SIZE) {
+                                        String disclaimer = " [stack trace too large]";
+                                        stackTraceString = stackTraceString.substring(0, MAX_STACK_TRACE_SIZE - disclaimer.length()) + disclaimer;
+                                    }
+                                    intent.putExtra(EXTRA_STACK_TRACE, stackTraceString);
+
+                                    // MAIN ACTIVITY
+                                    if (application.mainActivity != null)
+                                        intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, application.mainActivity.toString());
+                                    else
+                                        intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, "MAIN ACTIVITY INFO: null");
+
+                                    if (isTrackActivitiesEnabled) {
+                                        StringBuilder activityLogStringBuilder = new StringBuilder();
+                                        while (!activityLog.isEmpty()) {
+                                            activityLogStringBuilder.append(activityLog.poll());
+                                        }
+                                        intent.putExtra(EXTRA_ACTIVITY_LOG, activityLogStringBuilder.toString());
+                                    }
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    application.startActivity(intent);
+                                } else {
                                     if (oldHandler != null) {
                                         oldHandler.uncaughtException(thread, throwable);
                                         return;
                                     }
-                                } else {
-                                    setLastCrashTimestamp(application, new Date().getTime());
-                                    if (!isInBackground || isBackgroundMode) {
-                                        final Intent intent = new Intent(application, DefaultErrorActivity.class);
-                                        StringWriter sw = new StringWriter();
-                                        PrintWriter pw = new PrintWriter(sw);
-                                        throwable.printStackTrace(pw);
-                                        String stackTraceString = sw.toString();
-                                        if (stackTraceString.length() > MAX_STACK_TRACE_SIZE) {
-                                            String disclaimer = " [stack trace too large]";
-                                            stackTraceString = stackTraceString.substring(0, MAX_STACK_TRACE_SIZE - disclaimer.length()) + disclaimer;
-                                        }
-                                        intent.putExtra(EXTRA_STACK_TRACE, stackTraceString);
-
-//                                        // ITEM INFO
-//                                        if (application.CurrentItem != null)
-//                                            intent.putExtra(EXTRA_ITEM_INFO, application.CurrentItem.toString());
-//                                        else
-//                                            intent.putExtra(EXTRA_ITEM_INFO, "ITEM INFO: null");
-//
-                                        // MAIN ACTIVITY
-                                        if (application.pTuneActivity != null)
-                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, application.pTuneActivity.toString());
-                                        else
-                                            intent.putExtra(EXTRA_MAIN_ACTIVITY_INFO, "MAIN ACTIVITY INFO: null");
-
-                                        if (isTrackActivitiesEnabled) {
-                                            StringBuilder activityLogStringBuilder = new StringBuilder();
-                                            while (!activityLog.isEmpty()) {
-                                                activityLogStringBuilder.append(activityLog.poll());
-                                            }
-                                            intent.putExtra(EXTRA_ACTIVITY_LOG, activityLogStringBuilder.toString());
-                                        }
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        application.startActivity(intent);
-                                    } else {
-                                        if (oldHandler != null) {
-                                            oldHandler.uncaughtException(thread, throwable);
-                                            return;
-                                        }
-                                        //If it is null (should not be), we let it continue and kill the process or it will be stuck
-                                    }
+                                    //If it is null (should not be), we let it continue and kill the process or it will be stuck
                                 }
-                                final Activity lastActivity = lastActivityCreated.get();
-                                if (lastActivity != null) {
-                                    lastActivity.finish();
-                                    lastActivityCreated.clear();
-                                }
-                                killCurrentProcess();
-                            } else if (oldHandler != null) {
-                                //Pass control to old uncaught exception handler
-                                oldHandler.uncaughtException(thread, throwable);
                             }
+                            final Activity lastActivity = lastActivityCreated.get();
+                            if (lastActivity != null) {
+                                lastActivity.finish();
+                                lastActivityCreated.clear();
+                            }
+                            killCurrentProcess();
+                        } else if (oldHandler != null) {
+                            //Pass control to old uncaught exception handler
+                            oldHandler.uncaughtException(thread, throwable);
                         }
                     });
                     application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
@@ -243,7 +231,7 @@ public final class UCEHandler {
     }
 
     public static class Builder {
-        private Context context;
+        private final Context context;
         private boolean isUCEHEnabled = true;
         private String commaSeparatedEmailAddresses;
         private boolean isTrackActivitiesEnabled = false;

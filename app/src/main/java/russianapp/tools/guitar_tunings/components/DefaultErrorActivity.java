@@ -1,4 +1,4 @@
-package russianapp.tools.guitar_tunings;
+package russianapp.tools.guitar_tunings.components;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -18,10 +17,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,14 +26,14 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import components.UCEHandler;
-import components.xMail;
+import russianapp.tools.guitar_tunings.MainActivity;
+import russianapp.tools.guitar_tunings.R;
+import russianapp.tools.guitar_tunings.csp.CentralServicePortalManager;
 
 /**
  * Created by Rohit.
@@ -47,27 +44,31 @@ public final class DefaultErrorActivity extends Activity {
     static final String EXTRA_ITEM_INFO = "EXTRA_ITEM_INFO";
     static final String EXTRA_ACTIVITY_LOG = "EXTRA_ACTIVITY_LOG";
     private File txtFile;
-    private String strCurrentErrorLog;
+    public String strCurrentErrorLog;
     private String strCurrentStackLog;
 
     Activity activity;
 
     // Native passwords:
-    static {
-        System.loadLibrary("keys");
+//    static {
+//        System.loadLibrary("keys");
+//    }
+
+    public DefaultErrorActivity() {
+        super();
     }
 
-    public native String getSMTPAUTHUSER();
-
-    public native String getSMTPAUTHPWD();
-
-    public native String getEMAILFROM();
-
-    public native String getEMAILTO();
+//    public native String getSMTPAUTHUSER();
+//
+//    public native String getSMTPAUTHPWD();
+//
+//    public native String getEMAILFROM();
+//
+//    public native String getEMAILTO();
 
     public static void startApp(Activity activity) {
         try {
-            Intent intent = new Intent(activity, StartActivity.class);
+            Intent intent = new Intent(activity, MainActivity.class);
             intent.putExtra("crash", true);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -75,6 +76,7 @@ public final class DefaultErrorActivity extends Activity {
             PendingIntent pendingIntent = PendingIntent.getActivity(Global.getInstance().getBaseContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
             AlarmManager mgr = (AlarmManager) Global.getInstance().getBaseContext().getSystemService(Context.ALARM_SERVICE);
+            assert mgr != null;
             mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 250, pendingIntent);
 
             activity.finish();
@@ -117,70 +119,55 @@ public final class DefaultErrorActivity extends Activity {
 
         activity = this;
 
-        // Сразу отправить ошибку по почте
-        emailErrorLog();
+        // Картинка загрузки
+//        SimpleDraweeView ivFeedCenter = findViewById(R.id.ivFeedCenter);
+//        Uri uri;
+//        if (PreferencesManager.getBooleanPreference(this, PreferencesManager.ANIMATION_ON, true))
+//            // Gif анимация загрузка
+//            uri = new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(R.drawable.ball_loading)).build();
+//        else
+//            // Static picture
+//            uri = new Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(String.valueOf(R.drawable.ball_not_loading)).build();
+//
+//        DraweeController controller = Fresco.newDraweeControllerBuilder().setUri(uri).setAutoPlayAnimations(true).build();
+//        ivFeedCenter.setController(controller);
 
-        findViewById(R.id.button_close_app).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // Сразу отправить ошибку по почте
+        try {
+            emailErrorLog();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        findViewById(R.id.button_close_app).setOnClickListener(v -> {
 //                DefaultErrorActivity.this.finish();
 //                android.os.Process.killProcess(android.os.Process.myPid());
 //                System.exit(10);
-
-                startApp(activity);
-            }
+            emailErrorLog();
+            //startApp(activity);
         });
-        findViewById(R.id.button_copy_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                copyErrorToClipboard();
-            }
+        findViewById(R.id.button_copy_error_log).setOnClickListener(v -> copyErrorToClipboard());
+        findViewById(R.id.button_share_error_log).setOnClickListener(v -> shareErrorLog());
+        findViewById(R.id.button_save_error_log).setOnClickListener(v -> saveErrorLogToFile(true));
+        findViewById(R.id.button_email_error_log).setOnClickListener(v -> {
+            //emailErrorLog();
+            emailErrorLogUser();
         });
-        findViewById(R.id.button_share_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareErrorLog();
-            }
-        });
-        findViewById(R.id.button_save_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveErrorLogToFile(true);
-            }
-        });
-        findViewById(R.id.button_email_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //emailErrorLog();
-                emailErrorLogUser();
-            }
-        });
-        findViewById(R.id.button_view_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog dialog = new AlertDialog.Builder(DefaultErrorActivity.this)
-                        .setTitle("Error Log")
-                        .setMessage(getAllErrorDetailsFromIntent(DefaultErrorActivity.this, getIntent()))
-                        .setPositiveButton("Copy Log & Close",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        copyErrorToClipboard();
-                                        dialog.dismiss();
-                                    }
-                                })
-                        .setNeutralButton("Close",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                        .show();
-                TextView textView = dialog.findViewById(android.R.id.message);
-                if (textView != null) {
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                }
+        findViewById(R.id.button_view_error_log).setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(DefaultErrorActivity.this)
+                    .setTitle("Error Log")
+                    .setMessage(getAllErrorDetailsFromIntent(DefaultErrorActivity.this, getIntent()))
+                    .setPositiveButton("Copy Log & Close",
+                            (dialog12, which) -> {
+                                copyErrorToClipboard();
+                                dialog12.dismiss();
+                            })
+                    .setNeutralButton("Close",
+                            (dialog1, which) -> dialog1.dismiss())
+                    .show();
+            TextView textView = dialog.findViewById(android.R.id.message);
+            if (textView != null) {
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             }
         });
     }
@@ -192,17 +179,19 @@ public final class DefaultErrorActivity extends Activity {
         //  Отправка сообщения по почте
         String subject = strCurrentStackLog;
         String[] parts = strCurrentStackLog.split("Caused by: ");
-        if (parts.length > 1)
+        if (parts.length > 1) {
             if (parts[1].split("\n").length > 0)
                 subject = parts[1].split("\n")[0];
             else if (parts[0].split("\n").length > 0)
                 subject = parts[0].split("\n")[0];
+        } else
+            subject = strCurrentStackLog.substring(100);
 
-        String emailAddress = new String(Base64.decode(getEMAILTO(), Base64.DEFAULT));
+        String emailAddress = "220288.mia@gmail.com";
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("plain/text");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "GTR err: " + getVersionName(DefaultErrorActivity.this) + ": " + subject);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "UKP err: " + getVersionName(DefaultErrorActivity.this) + ": " + subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, errorLog);
         if (txtFile.exists()) {
             Uri filePath = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", txtFile);
@@ -213,7 +202,7 @@ public final class DefaultErrorActivity extends Activity {
     }
 
     private void saveErrorLogToFile(boolean isShowToast) {
-        Boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+        boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         if (isSDPresent && isExternalStorageWritable()) {
             Date currentDate = new Date();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
@@ -234,7 +223,7 @@ public final class DefaultErrorActivity extends Activity {
                 if (txtFile.exists() && isShowToast) {
                     Toast.makeText(this, "File Saved Successfully", Toast.LENGTH_SHORT).show();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("REQUIRED", "This app does not have write storage permission to save log file.");
                 if (isShowToast) {
                     Toast.makeText(this, "Storage Permission Not Found", Toast.LENGTH_SHORT).show();
@@ -335,11 +324,11 @@ public final class DefaultErrorActivity extends Activity {
             // MAIN ACTIVITY INFO
             errorReport.append(intent.getStringExtra(EXTRA_MAIN_ACTIVITY_INFO));
             errorReport.append(LINE_SEPARATOR);
-//
-//            // ITEM INFO
-//            errorReport.append(LINE_SEPARATOR);
-//            errorReport.append(intent.getStringExtra(EXTRA_ITEM_INFO));
-//            errorReport.append(LINE_SEPARATOR);
+
+            // ITEM INFO
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(intent.getStringExtra(EXTRA_ITEM_INFO));
+            errorReport.append(LINE_SEPARATOR);
 
             // User activities
             if (activityLog != null) {
@@ -409,28 +398,16 @@ public final class DefaultErrorActivity extends Activity {
             else if (parts[0].split("\n").length > 0)
                 subject = parts[0].split("\n")[0];
 
-        xMail xmail = new xMail();
-        xmail.SMTP_AUTH_USER = new String(Base64.decode(getSMTPAUTHUSER(), Base64.DEFAULT));
-        xmail.SMTP_AUTH_PWD = new String(Base64.decode(getSMTPAUTHPWD(), Base64.DEFAULT));
-        xmail.EMAIL_FROM = new String(Base64.decode(getEMAILFROM(), Base64.DEFAULT));
-        xmail.EMAIL_TO = new String(Base64.decode(getEMAILTO(), Base64.DEFAULT));
+        // CSP message about the error
+        try {
+            CentralServicePortalManager cspMng = new CentralServicePortalManager(activity);
+            cspMng.activity = activity;
+            cspMng.doServiceTask("errorRegistry", subject + "\n" + errorLog);
 
-        xmail.initialize("GTR err: " + getVersionName(DefaultErrorActivity.this) + ": " + subject);
-        xMail.sendMessageAsync task = new xMail.sendMessageAsync(DefaultErrorActivity.this, xmail.message);
-        task.execute(errorLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        // Альтернативная почта GMail:
-//        try {
-//            GMailSender sender = new GMailSender("", "");
-//            sender.sendMail("UKA PORTAL 'errors'",
-//                    errorLog,
-//                    "",
-//                    "");
-//            GMailSender.sendMessageAsync task = sender.new sendMessageAsync();
-//            task.execute();
-//
-//        } catch (Exception e) {
-//            Log.e("SendMail", e.getMessage(), e);
-//        }
+        // new Handler().postDelayed(() -> startApp(activity), 10000);
     }
 }

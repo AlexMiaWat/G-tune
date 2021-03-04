@@ -5,27 +5,26 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
 import android.os.AsyncTask;
 
-import russianapp.tools.guitar_tunings.PTuneActivity;
+import russianapp.tools.guitar_tunings.MainActivity;
 
 /**
  * @author weston
- *
  */
 public class CaptureTask extends AsyncTask<Float, Float, Void> {
-	
-	private PTuneActivity mainActivity;
-	
-	public CaptureTask(PTuneActivity context) {
-		this.mainActivity = context;
-	}
 
-	@Override
-	protected Void doInBackground(Float... target) {
-		int sRate = 44100;
-		int bufferSize = 65536;
-		//bufferSize = 32768;
+    private MainActivity mainActivity;
 
-		AudioRecord recorder = new AudioRecord(AudioSource.DEFAULT,
+    public CaptureTask(MainActivity context) {
+        this.mainActivity = context;
+    }
+
+    @Override
+    protected Void doInBackground(Float... target) {
+        int sRate = 44100;
+        int bufferSize = 65536;
+        //bufferSize = 32768;
+
+        AudioRecord recorder = new AudioRecord(AudioSource.DEFAULT,
 				sRate, AudioFormat.CHANNEL_IN_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 		

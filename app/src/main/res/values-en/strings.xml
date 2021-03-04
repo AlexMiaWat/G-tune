@@ -7,8 +7,8 @@
     <string name="drop_c_std">Drop C</string>
     <string name="double_drop_d_std">Double Drop D</string>
     <string name="open_c_std">Open C</string>
-    <string name="open_d_std">Open D \"Dylan\"</string>
-    <string name="open_g_std">Open G \"Stones\"</string>
+    <string name="open_d_std">Open D \'Dylan\'</string>
+    <string name="open_g_std">Open G \'Stones\'</string>
     <string name="_1st">1st</string>
     <string name="_2nd">2nd</string>
     <string name="_3rd">3rd</string>
@@ -32,11 +32,13 @@
     <string name="B">B</string>
     <string name="C">C</string>
     <string name="F">F</string>
-    <string name="open_c6_std">Open C6 \"Led Zeppelin\"</string>
+    <string name="open_c6_std">Open C6 \'Led Zeppelin\'</string>
     <string name="open_d6_std">Open D6</string>
     <string name="open_e_std">Open E</string>
-    <string name="low_c_std">Low C \"Celtic\"</string>
+    <string name="low_c_std">Low C \'Celtic\'</string>
     <string name="bass">BASS</string>
     <string name="exit_frase">Are you sure you want leave app?</string>
     <string name="exit">Leave</string>
+    <string name="update_to_latest_version">Please update app to the latest version on Google Play Market</string>
+    <string name="Update_now">Update now</string>
 </resources>

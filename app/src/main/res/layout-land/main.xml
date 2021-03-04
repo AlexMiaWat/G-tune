@@ -68,12 +68,12 @@
                         android:id="@+id/radio0"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:checked="true"
                         android:onClick="onRadioButtonClicked"
                         android:tag="246.942"
                         android:text="B3"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText"
                          />
@@ -82,11 +82,11 @@
                         android:id="@+id/radio1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:onClick="onRadioButtonClicked"
                         android:tag="195.998"
                         android:text="G3"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,UnusedAttribute" />
 
@@ -94,11 +94,11 @@
                         android:id="@+id/radio2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:onClick="onRadioButtonClicked"
                         android:tag="146.832"
                         android:text="D3"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,UnusedAttribute" />
 
@@ -106,11 +106,11 @@
                         android:id="@+id/radio3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:onClick="onRadioButtonClicked"
                         android:tag="110.0"
                         android:text="A2"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,UnusedAttribute" />
 
@@ -118,11 +118,11 @@
                         android:id="@+id/radio4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:onClick="onRadioButtonClicked"
                         android:tag="82.4069"
                         android:text="E2"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,UnusedAttribute" />
 
@@ -130,11 +130,11 @@
                         android:id="@+id/radio5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:buttonTint="@color/GrreenMan"
+                        android:buttonTint="@color/GreenMan"
                         android:onClick="onRadioButtonClicked"
                         android:tag="61.7354"
                         android:text="B1"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,UnusedAttribute" />
                 </RadioGroup>
@@ -206,7 +206,7 @@
                         android:paddingLeft="5dp"
                         android:text="@string/e_std"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded,RtlSymmetry" />
 
@@ -218,7 +218,7 @@
                         android:paddingRight="5dp"
                         android:text="0.0 Hz"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/GrreenMan"
+                        android:textColor="@color/GreenMan"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,RtlHardcoded,RtlSymmetry" />
 
@@ -253,19 +253,18 @@
                     android:gravity="bottom|center_horizontal"
                     android:text="It is the ads time..."
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/GrreenMan"
+                    android:textColor="@color/GreenMan"
                     android:textStyle="bold"
                     android:visibility="gone"
                     tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded,RtlSymmetry" />
 
-                    <com.google.android.gms.ads.AdView
-                        android:id="@+id/adView"
-                        android:layout_gravity="bottom"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        ads:adSize="SMART_BANNER"
-                        ads:adUnitId="@string/publisher_id">
-                    </com.google.android.gms.ads.AdView>
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    ads:adSize="SMART_BANNER"
+                    ads:adUnitId="@string/publisher_id" />
             </LinearLayout>
 
         </FrameLayout>
