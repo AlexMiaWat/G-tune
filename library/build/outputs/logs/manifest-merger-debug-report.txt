@@ -1,0 +1,25 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml:2:1-52
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml:2:1-52
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml:2:1-52
+	package
+		ADDED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml:2:11-49
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml:2:1-52
+uses-sdk
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+		ADDED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+		ADDED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml
+		INJECTED from C:\WorkSpace\G-tune\library\src\main\AndroidManifest.xml

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">https://yk.kz</domain>
+        <domain includeSubdomains="true">http://yka.kz</domain>
+        <domain includeSubdomains="true">http://oskemen.info</domain>
+        <domain includeSubdomains="true">https://www.olx.kz</domain>
+        <domain includeSubdomains="true">https://olx.kz</domain>
+        <domain includeSubdomains="true">https://yandex.ru</domain>
+        <domain includeSubdomains="true">https://www.google.com</domain>
+        <domain includeSubdomains="true">http://rusappclub.sytes.net/</domain>
+        <domain includeSubdomains="true">http://img.7news.kz/</domain>
+
+        <domain includeSubdomains="true">yk.kz</domain>
+        <domain includeSubdomains="true">yka.kz</domain>
+        <domain includeSubdomains="true">oskemen.info</domain>
+        <domain includeSubdomains="true">www.olx.kz</domain>
+        <domain includeSubdomains="true">olx.kz</domain>
+        <domain includeSubdomains="true">yourebay.ucoz.kz</domain>
+        <domain includeSubdomains="true">yandex.ru</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">rusappclub.sytes.net</domain>
+        <domain includeSubdomains="true">img.7news.kz</domain>
+
+        <domain includeSubdomains="true">startpage.com</domain>
+        <domain includeSubdomains="true">yandex.net</domain>
+        <domain includeSubdomains="true">avatars.mds.yandex.net</domain>
+    </domain-config>
+</network-security-config>

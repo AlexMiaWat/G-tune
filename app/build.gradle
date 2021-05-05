@@ -19,9 +19,9 @@ android {
         applicationId 'russianapp.tools.guitar_tunings'
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 10
-        versionName '1.0 '
-        versionNameSuffix = 'Bull power 1'
+        versionCode 11
+        versionName '1.1 '
+        versionNameSuffix = 'Greate May 1'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,8 +33,9 @@ android {
     }
 
     compileSdkVersion 30
-    buildToolsVersion = '30.0.2'
+    buildToolsVersion = '30.0.3'
     compileOptions {
+        encoding = 'UTF-8'
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -43,6 +44,11 @@ android {
         all {
             exclude module: 'junit'
         }
+    }
+
+    lintOptions {
+        disable 'IconMissingDensityFolder', 'GoogleAppIndexingWarning',
+                'AllowBackup', 'OldTargetApi', 'NonConstantResourceId'
     }
 }
 
@@ -64,22 +70,22 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.13.1'
     // internet connection
     implementation 'com.novoda:merlin:1.2.0'
-    // Crash logger
-    implementation 'com.github.RohitSurwase.UCE-Handler:uce_handler:1.4'
-    // json-simple
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
     // admob
-    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+    implementation 'com.google.android.gms:play-services-ads:20.1.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     implementation 'com.google.firebase:firebase-dynamic-links:19.1.1'
-    implementation 'com.google.firebase:firebase-ads:19.7.0'
+    implementation 'com.google.firebase:firebase-ads:20.1.0'
 
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:26.7.0')
     // Firebase SDK for Google Analytics
-    implementation 'com.google.firebase:firebase-analytics:18.0.2'
+    implementation 'com.google.firebase:firebase-analytics:18.0.3'
     // Firebase SDK for Crashlytics.
-    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     // Firebase SDK Performance Monitoring library
     implementation 'com.google.firebase:firebase-perf:19.1.1'
+
+    implementation project(':library')
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_pressed="true"
+        android:padding="5dp"
+        android:drawable="@drawable/note_play_1" /> <!-- pressed -->
+
+    <item
+        android:state_focused="true"
+        android:padding="5dp"
+        android:drawable="@drawable/note_play_1" /> <!-- focused -->
+
+    <item
+        android:state_selected="true"
+        android:padding="5dp"
+        android:drawable="@drawable/note_play_0" /> <!-- selected -->
+
+    <item
+        android:layout_margin="5dp"
+        android:drawable="@drawable/note_play_2" /> <!-- default -->
+
+</selector>

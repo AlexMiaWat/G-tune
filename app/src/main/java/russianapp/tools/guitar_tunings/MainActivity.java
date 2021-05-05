@@ -14,8 +14,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -29,8 +31,15 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.billthefarmer.mididriver.GeneralMidiConstants;
+import org.billthefarmer.mididriver.MidiConstants;
+import org.billthefarmer.mididriver.MidiDriver;
+import org.billthefarmer.mididriver.ReverbConstants;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import russianapp.tools.guitar_tunings.audio.CaptureThread;
 import russianapp.tools.guitar_tunings.components.Global;
@@ -40,11 +49,16 @@ import russianapp.tools.guitar_tunings.graphics.DialView;
 
 import static russianapp.tools.guitar_tunings.R.id.adView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+        implements View.OnTouchListener, View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener,
+        MidiDriver.OnMidiStartListener {
+
     private DialView dial;
     private TextView topBar, tuner_txt, aim, hz;
-    private double targetFrequency;
+    private float targetFrequency;
     private CaptureThread mCapture;
+    Handler mHandler;
     private ImageButton language;
     String lang;
     ArrayList<String> locations;
@@ -58,9 +72,10 @@ public class MainActivity extends Activity {
 
     int idMenuSelected = 2131230892;
 
-    //Sounds sounds;
-    //PerfectTune perfectTune;
-//    private PlaySound mPlaySound;
+    // Sounds sounds;
+    protected MidiDriver midi;
+    ImageButton recBtn, playBtn;
+    Map<Float, Integer> map;
 
     Activity main;
 
@@ -72,10 +87,72 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE); // нет заголовка
         setContentView(R.layout.main);
 
-        // Sounds play
-        //sounds = new Sounds();
-        //perfectTune = new PerfectTune();
+        // admob
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+        mAdView = findViewById(adView);
+        adRequest = new AdRequest.Builder().build();
 
+        // Create midi driver
+        midi = MidiDriver.getInstance(this);
+
+        map = new HashMap<>();
+        map.put(30.87f, 23);     // B0
+
+        map.put(41.20f, 28);     // E1
+        map.put(55.00f, 33);     // A1
+        map.put(61.74f, 35);     // B1
+
+        map.put(65.41f, 36);     // C2
+        map.put(73.42f, 38);     // D2
+        map.put(82.41f, 40);     // E2
+        map.put(98.00f, 43);     // G2
+        map.put(110.00f, 45);    // A2
+        map.put(123.47f, 47);    // B2
+
+        map.put(130.81f, 48);    // C3
+        map.put(146.83f, 50);    // D3
+        map.put(164.81f, 52);    // E3
+        map.put(174.61f, 53);    // F3
+        map.put(185.00f, 54);    // F#3
+        map.put(196.00f, 55);    // G3
+        map.put(207.65f, 56);    // G#3
+        map.put(220.00f, 57);    // A3
+        map.put(246.94f, 59);    // B3
+
+        map.put(261.63f, 60);    // C4
+        map.put(277.18f, 61);    // C#4
+        map.put(293.66f, 62);    // D4
+        map.put(329.63f, 64);    // E4
+        map.put(440.00f, 69);    // A4
+
+        // rec and play btn
+        playBtn = findViewById(R.id.playBtn);
+        recBtn = findViewById(R.id.recBtn);
+
+        if (recBtn != null && playBtn != null) {
+            recBtn.setSelected(true);
+
+            recBtn.setOnClickListener(button -> {
+                button.setSelected(true);
+                playBtn.setSelected(false);
+                if (mCapture == null)
+                    TargetFrequencyStart();
+            });
+
+            playBtn.setOnClickListener(button -> {
+                int note = getNote();
+                sendMidi(MidiConstants.NOTE_ON, note, 63);
+                button.setSelected(true);
+                recBtn.setSelected(false);
+                if (mCapture != null) {
+                    mCapture.setRunning(false);
+                    mCapture = null;
+                }
+            });
+        }
+
+        // Global
         main = this;
 
         // Set global variables
@@ -85,16 +162,6 @@ public class MainActivity extends Activity {
         dial = findViewById(R.id.dial);
         topBar = findViewById(R.id.textView1);
         tuner_txt = findViewById(R.id.tuning_text);
-
-        // admob
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-        mAdView = findViewById(adView);
-        adRequest = new AdRequest.Builder().build();
-
-//        List<String> testDeviceIds = Collections.singletonList("6DE5FDE9C640128401A5C097587D9909");
-//        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
-//        MobileAds.setRequestConfiguration(configuration);
 
         // На передний план:
         FrameLayout bar = findViewById(R.id.bar);
@@ -193,7 +260,10 @@ public class MainActivity extends Activity {
 
     public void setLocate(String languageToLoad) {
 
-        cspMng.doServiceTask("languageSelected", "Selected: " + languageToLoad);
+        try {
+            cspMng.doServiceTask("languageSelected", "Selected: " + languageToLoad);
+        } catch (Exception ignored) {
+        }
 
         // Flag
         language.setImageResource(this.getResources().getIdentifier("drawable/" + languageToLoad + "_", null, this.getPackageName()));
@@ -221,31 +291,46 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-    	super.onDestroy();
+        super.onDestroy();
         android.os.Process.killProcess(android.os.Process.myPid());
 
-    	if (mCapture != null) {
-    		mCapture.setRunning(false);
-    		mCapture = null;
-    	}
-    	
-    	Log.d("PTuneActivity", "onDestroy called.");
+        if (mCapture != null) {
+            mCapture.setRunning(false);
+            mCapture = null;
+        }
+
+        // Stop midi
+        if (midi != null)
+            midi.stop();
     }
     
     @Override
     protected void onPause() {
-    	super.onPause();
-        android.os.Process.killProcess(android.os.Process.myPid());
+        super.onPause();
+        //android.os.Process.killProcess(android.os.Process.myPid());
 
-    	mCapture.setRunning(false);
-    	
-    	Log.d("PTuneActivity", "onPause called.");
+        if (mCapture != null) {
+            mCapture.setRunning(false);
+            mCapture = null;
+        }
+
+        // Stop midi
+        if (midi != null)
+            midi.stop();
     }
     
     @Override
     protected void onResume() {
-    	super.onResume();
-    	updateTargetFrequency(); // Get radio button selection
+        super.onResume();
+
+        updateTargetFrequency(); // Get radio button selection
+
+        if (mCapture == null)
+            TargetFrequencyStart();
+
+        // Start midi
+        if (midi != null)
+            midi.start();
     }
     
     @Override
@@ -256,26 +341,26 @@ public class MainActivity extends Activity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void e_std_Clicked(){
+    private void e_std_Clicked() {
         RadioButton rb;
         rb = findViewById(R.id.radio0);
-        rb.setText(getString(R.string._1st) + (" e"));
-        rb.setTag("329.628");
+        rb.setText(getString(R.string._1st) + " E4");
+        rb.setTag("329.63");
         rb = findViewById(R.id.radio1);
-        rb.setText(getString(R.string._2nd) + " B");
-        rb.setTag("246.942");
+        rb.setText(getString(R.string._2nd) + " B3");
+        rb.setTag("246.94");
         rb = findViewById(R.id.radio2);
-        rb.setText(getString(R.string._3rd) + " G");
-        rb.setTag("195.998");
+        rb.setText(getString(R.string._3rd) + " G3");
+        rb.setTag("196.00");
         rb = findViewById(R.id.radio3);
-        rb.setText(getString(R.string._4th) + " D");
-        rb.setTag("146.832");
+        rb.setText(getString(R.string._4th) + " D3");
+        rb.setTag("146.83");
         rb = findViewById(R.id.radio4);
-        rb.setText(getString(R.string._5th) + " A");
-        rb.setTag("110.000");
+        rb.setText(getString(R.string._5th) + " A2");
+        rb.setTag("110.00");
         rb = findViewById(R.id.radio5);
-        rb.setText(getString(R.string._6th) + " E");
-        rb.setTag("82.4069");
+        rb.setText(getString(R.string._6th) + " E2");
+        rb.setTag("82.41");
 
         updateTargetFrequency();
 
@@ -289,7 +374,11 @@ public class MainActivity extends Activity {
         RadioButton rb = findViewById(selected);
         int position = rg.indexOfChild(rb);
 
-        cspMng.doServiceTask("tuneProperties", "Selected: " + item.getTitle() + " : " + (int) (position + 1));
+        try {
+            cspMng.doServiceTask("tuneProperties", "Selected: " + item.getTitle() + " : " + (position + 1));
+        } catch (Exception ignored) {
+        }
+
         idMenuSelected = item.getItemId();
 
         return selectMenu();
@@ -305,51 +394,51 @@ public class MainActivity extends Activity {
 
             case R.id.b_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " B");
-                rb.setTag("246.942");
+                rb.setText(getString(R.string._1st) + " B3");
+                rb.setTag("246.94");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " G");
-                rb.setTag("185.000");
+                rb.setText(getString(R.string._2nd) + " F#3");
+                rb.setTag("185.00");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " D");
-                rb.setTag("147.832");
+                rb.setText(getString(R.string._3rd) + " D3");
+                rb.setTag("146.83");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._4th) + " A2");
+                rb.setTag("110.00");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " E");
-                rb.setTag("82.4069");
+                rb.setText(getString(R.string._5th) + " E2");
+                rb.setTag("82.41");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " B");
-                rb.setTag("61.7354");
+                rb.setText(getString(R.string._6th) + " B1");
+                rb.setTag("61.74");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.b_std);
                 return true;
 
             case R.id.open_a_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " e");
-                rb.setTag("329.628");
+                rb.setText(getString(R.string._1st) + " E4");
+                rb.setTag("329.63");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " C#");
-                rb.setTag("277.200");
+                rb.setText(getString(R.string._2nd) + " C#4");
+                rb.setTag("277.18");
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " A");
-                rb.setTag("219.998");
+                rb.setText(getString(R.string._3rd) + " A3");
+                rb.setTag("220.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " E");
-                rb.setTag("164.800");
+                rb.setText(getString(R.string._4th) + " E3");
+                rb.setTag("164.81");
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " E");
-                rb.setTag("82.410");
+                rb.setText(getString(R.string._6th) + " E2");
+                rb.setTag("82.41");
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_a_std);
@@ -358,27 +447,27 @@ public class MainActivity extends Activity {
             case R.id.open_c_std:
                 rb = findViewById(R.id.radio0);
                 rb.setText(getString(R.string._1st) + " E4");
-                rb.setTag("329.628");
+                rb.setTag("329.63");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " C");
-                rb.setTag("261.629"); //вверх 0,5 до До С
+                rb.setText(getString(R.string._2nd) + " C4");
+                rb.setTag("261.63"); //вверх 0,5 до До С
 
                 rb = findViewById(R.id.radio2);
                 rb.setText(getString(R.string._3rd) + " G3");
-                rb.setTag("195.998");
+                rb.setTag("196.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " C");
-                rb.setTag("130.819");// вниз 1 до До С
+                rb.setText(getString(R.string._4th) + " C3");
+                rb.setTag("130.81");// вниз 1 до До С
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " G");
-                rb.setTag("98.000");// вниз 1 до Соль G
+                rb.setText(getString(R.string._5th) + " G2");
+                rb.setTag("98.00");// вниз 1 до Соль G
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " C");
-                rb.setTag("65.410"); //вниз 2 до До С
+                rb.setText(getString(R.string._6th) + " C2");
+                rb.setTag("65.41"); //вниз 2 до До С
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_c_std);
@@ -386,28 +475,28 @@ public class MainActivity extends Activity {
 
             case R.id.open_c6_std: // Открытый C "Led Zeppelin"
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " e");
-                rb.setTag("329.628");
+                rb.setText(getString(R.string._1st) + " E4");
+                rb.setTag("329.63");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " C");
-                rb.setTag("261.629"); //вверх 0,5 до До С
+                rb.setText(getString(R.string._2nd) + " C4");
+                rb.setTag("261.63"); //вверх 0,5 до До С
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G");
-                rb.setTag("195.998");
+                rb.setText(getString(R.string._3rd) + " G3");
+                rb.setTag("196.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " C");
-                rb.setTag("130.819");// вниз 1 до До С
+                rb.setText(getString(R.string._4th) + " C3");
+                rb.setTag("130.81");// вниз 1 до До С
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " C");
-                rb.setTag("65.410"); //вниз 2 до До С
+                rb.setText(getString(R.string._6th) + " C2");
+                rb.setTag("65.41"); //вниз 2 до До С
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_c6_std);
@@ -415,28 +504,28 @@ public class MainActivity extends Activity {
 
             case R.id.open_d_std: // Открытый D "Dylan"
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.660");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " A");
-                rb.setTag("220.000");
+                rb.setText(getString(R.string._2nd) + " A3");
+                rb.setTag("220.00");
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " F#");
-                rb.setTag("185.000");
+                rb.setText(getString(R.string._3rd) + " F#3");
+                rb.setTag("185.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " D");
-                rb.setTag("147.830");
+                rb.setText(getString(R.string._4th) + " D3");
+                rb.setTag("146.83");
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " D");
-                rb.setTag("73.910");
+                rb.setText(getString(R.string._6th) + " D2");
+                rb.setTag("73.42");
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_d_std);
@@ -444,28 +533,28 @@ public class MainActivity extends Activity {
 
             case R.id.open_d6_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.660");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " B");
-                rb.setTag("246.900");
+                rb.setText(getString(R.string._2nd) + " B3");
+                rb.setTag("246.94");
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " F#");
-                rb.setTag("185.000");
+                rb.setText(getString(R.string._3rd) + " F#3");
+                rb.setTag("185.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " D");
-                rb.setTag("146.830");
+                rb.setText(getString(R.string._4th) + " D3");
+                rb.setTag("146.83");
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " D");
-                rb.setTag("73.420");
+                rb.setText(getString(R.string._6th) + " D2");
+                rb.setTag("73.42");
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_d6_std);
@@ -473,28 +562,28 @@ public class MainActivity extends Activity {
 
             case R.id.open_e_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " e");
-                rb.setTag("329.600");
+                rb.setText(getString(R.string._1st) + " E4");
+                rb.setTag("329.63");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " B");
-                rb.setTag("246.900");
+                rb.setText(getString(R.string._2nd) + " B3");
+                rb.setTag("246.94");
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G#");
-                rb.setTag("207.700");
+                rb.setText(getString(R.string._3rd) + " G#3");
+                rb.setTag("207.65");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " E");
-                rb.setTag("164.800");
+                rb.setText(getString(R.string._4th) + " E3");
+                rb.setTag("164.81");
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " B");
-                rb.setTag("123.500");
+                rb.setText(getString(R.string._5th) + " B2");
+                rb.setTag("123.47");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " E");
-                rb.setTag("82.410");
+                rb.setText(getString(R.string._6th) + " E2");
+                rb.setTag("82.41");
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_e_std);
@@ -502,28 +591,28 @@ public class MainActivity extends Activity {
 
             case R.id.open_g_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.660");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
 
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " B");
-                rb.setTag("246.940");
+                rb.setText(getString(R.string._2nd) + " B3");
+                rb.setTag("246.94");
 
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G");
-                rb.setTag("196.000");
+                rb.setText(getString(R.string._3rd) + " G3");
+                rb.setTag("196.00");
 
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " D");
-                rb.setTag("146.830");
+                rb.setText(getString(R.string._4th) + " D3");
+                rb.setTag("146.83");
 
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " G");
-                rb.setTag("98.000");
+                rb.setText(getString(R.string._5th) + " G2");
+                rb.setTag("98.00");
 
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " D");
-                rb.setTag("73.420");
+                rb.setText(getString(R.string._6th) + " D2");
+                rb.setTag("73.42");
 
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.open_g_std);
@@ -531,139 +620,138 @@ public class MainActivity extends Activity {
 
             case R.id.drop_d_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " E");
-                rb.setTag("329.628");
+                rb.setText(getString(R.string._1st) + " E4");
+                rb.setTag("329.63");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " B");
-                rb.setTag("246.942");
+                rb.setText(getString(R.string._2nd) + " B3");
+                rb.setTag("246.94");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G");
-                rb.setTag("195.998");
+                rb.setText(getString(R.string._3rd) + " G3");
+                rb.setTag("196.00");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " D");
-                rb.setTag("146.832");
+                rb.setText(getString(R.string._4th) + " D3");
+                rb.setTag("146.83");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " D");
-                rb.setTag("73.910");
+                rb.setText(getString(R.string._6th) + " D2");
+                rb.setTag("73.42");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.drop_d_std);
                 return true;
 
             case R.id.drop_c_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.700");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " A");
-                rb.setTag("220.000");
+                rb.setText(getString(R.string._2nd) + " A3");
+                rb.setTag("220.00");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " F");
-                rb.setTag("174.610");
+                rb.setText(getString(R.string._3rd) + " F3");
+                rb.setTag("174.61");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " C");
-                rb.setTag("130.810");
+                rb.setText(getString(R.string._4th) + " C3");
+                rb.setTag("130.81");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " G");
-                rb.setTag("98.000");
+                rb.setText(getString(R.string._5th) + " G2");
+                rb.setTag("98.00");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " C");
-                rb.setTag("65.410");
+                rb.setText(getString(R.string._6th) + " C2");
+                rb.setTag("65.41");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.drop_c_std);
                 return true;
 
             case R.id.low_c_std: // Celtic
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.700");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " A");
-                rb.setTag("220.000");
+                rb.setText(getString(R.string._2nd) + " A3");
+                rb.setTag("220.00");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G");
-                rb.setTag("196.000");
-
+                rb.setText(getString(R.string._3rd) + " G3");
+                rb.setTag("196.00");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " D");
-                rb.setTag("146.800");
+                rb.setText(getString(R.string._4th) + " D3");
+                rb.setTag("146.83");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " G");
-                rb.setTag("98.000");
+                rb.setText(getString(R.string._5th) + " G2");
+                rb.setTag("98.00");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " C");
-                rb.setTag("65.410");
+                rb.setText(getString(R.string._6th) + " C2");
+                rb.setTag("65.41");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.low_c_std);
                 return true;
 
             case R.id.double_drop_d_std:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " D");
-                rb.setTag("293.650");
+                rb.setText(getString(R.string._1st) + " D4");
+                rb.setTag("293.66");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " B");
-                rb.setTag("246.942");
+                rb.setText(getString(R.string._2nd) + " B3");
+                rb.setTag("246.94");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " G");
-                rb.setTag("196.000");
+                rb.setText(getString(R.string._3rd) + " G3");
+                rb.setTag("196.00");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " F");
-                rb.setTag("147.830");
+                rb.setText(getString(R.string._4th) + " F3");
+                rb.setTag("174.61");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " D");
-                rb.setTag("73.910");
+                rb.setText(getString(R.string._6th) + " D2");
+                rb.setTag("73.42");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.double_drop_d_std);
                 return true;
 
             case R.id.cross_a:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " a");
-                rb.setTag("440.000");
+                rb.setText(getString(R.string._1st) + " A4");
+                rb.setTag("440.00");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " e");
-                rb.setTag("329.630");
+                rb.setText(getString(R.string._2nd) + " E4");
+                rb.setTag("329.63");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " a");
-                rb.setTag("220.000");
+                rb.setText(getString(R.string._3rd) + " A3");
+                rb.setTag("220.00");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " e");
-                rb.setTag("164.810");
+                rb.setText(getString(R.string._4th) + " E3");
+                rb.setTag("164.81");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " A");
-                rb.setTag("110.000");
+                rb.setText(getString(R.string._5th) + " A2");
+                rb.setTag("110.00");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " E");
-                rb.setTag("82.407");
+                rb.setText(getString(R.string._6th) + " E2");
+                rb.setTag("82.41");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.cross_a);
                 return true;
 
             case R.id.bass:
                 rb = findViewById(R.id.radio0);
-                rb.setText(getString(R.string._1st) + " C");
-                rb.setTag("130.810");
+                rb.setText(getString(R.string._1st) + " C3");
+                rb.setTag("130.81");
                 rb = findViewById(R.id.radio1);
-                rb.setText(getString(R.string._2nd) + " G");
-                rb.setTag("98.000");
+                rb.setText(getString(R.string._2nd) + " G2");
+                rb.setTag("98.00");
                 rb = findViewById(R.id.radio2);
-                rb.setText(getString(R.string._3rd) + " D");
-                rb.setTag("73.420");
+                rb.setText(getString(R.string._3rd) + " D2");
+                rb.setTag("73.42");
                 rb = findViewById(R.id.radio3);
-                rb.setText(getString(R.string._4th) + " A");
-                rb.setTag("55.000");
+                rb.setText(getString(R.string._4th) + " A1");
+                rb.setTag("55.00");
                 rb = findViewById(R.id.radio4);
-                rb.setText(getString(R.string._5th) + " E");
-                rb.setTag("41.200");
+                rb.setText(getString(R.string._5th) + " E1");
+                rb.setTag("41.20");
                 rb = findViewById(R.id.radio5);
-                rb.setText(getString(R.string._6th) + " B");
-                rb.setTag("30.870");
+                rb.setText(getString(R.string._6th) + " B0");
+                rb.setTag("30.87");
                 updateTargetFrequency();
                 tuner_txt.setText(R.string.bass);
                 return true;
@@ -672,13 +760,19 @@ public class MainActivity extends Activity {
         }
     }
 
+    @SuppressLint("HandlerLeak")
     private void TargetFrequencyStart() {
         updateTargetFrequency(); // Get radio button selection
 
-        @SuppressLint("HandlerLeak") Handler mHandler = new Handler() {
+        mHandler = new Handler() {
             @Override
             public void handleMessage(Message m) {
-                updateDisplay(m.getData().getFloat("Freq"));
+                if (mCapture != null)
+                    updateDisplay(m.getData().getFloat("Freq"));
+                else {
+                    mHandler.removeCallbacksAndMessages(null);
+                    mHandler = null;
+                }
             }
         };
 
@@ -689,6 +783,7 @@ public class MainActivity extends Activity {
 
     @SuppressLint("DefaultLocale")
     private void updateTargetFrequency() {
+
         // Grab the selected radio button tag.
         RadioGroup rg = findViewById(R.id.radioGroup1);
         int selected = rg.getCheckedRadioButtonId();
@@ -751,21 +846,10 @@ public class MainActivity extends Activity {
         else
             aim.setText(String.format("%.2f kHz", targetFrequency/1000));
 
-        //start the tune
-//        if (mPlaySound != null) {
-////            mPlaySound.stop();
-////            mPlaySound = null;
-//            mPlaySound.mOutputFreq = targetFrequency;
-//        } else {
-//            mPlaySound = new PlaySound();
-//            mPlaySound.mOutputFreq = targetFrequency;
-//            mPlaySound.start();
-//        }
-
         // ad mob
         if (mAdView != null)
             try {
-                if ((position == 2) || (position == 3) || (position == 5)) {
+                if (position > 1) {
                     mAdView.loadAd(adRequest);
                     mAdView.setVisibility(View.VISIBLE);
 
@@ -785,12 +869,29 @@ public class MainActivity extends Activity {
             } catch (Exception ignored) {
             }
 
+        try {
+            cspMng.doServiceTask("tuneString", "Selected: " + tuner_txt.getText() + " : " + (int) (position + 1));
+        } catch (Exception ignored) {
+        }
 
-        cspMng.doServiceTask("tuneString", "Selected: " + tuner_txt.getText() + " : " + (int) (position + 1));
+        if (playBtn.isSelected()) {
+            int note = getNote();
+            sendMidi(MidiConstants.NOTE_ON, note, 63);
+        }
     }
 
     public void onMenuClicked(View v) {
         openOptionsMenu();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
     }
 
     @Override
@@ -837,7 +938,7 @@ public class MainActivity extends Activity {
             dialog.show();
 
         }
-        return true;
+        return super.onKeyLongPress(keyCode, event);
     }
 
     @Override
@@ -852,5 +953,62 @@ public class MainActivity extends Activity {
             result.append("Current rb: ").append(hz.getText()).append("\n");
 
         return result.toString();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+    }
+
+    // Listener for sending initial midi messages when the Sonivox
+    // synthesizer has been started, such as program change.
+    @Override
+    public void onMidiStart() {
+        // Program change - harpsichord
+        sendMidi(MidiConstants.PROGRAM_CHANGE, GeneralMidiConstants.HARPSICHORD);
+
+        midi.setReverb(ReverbConstants.CHAMBER);
+        // midi.setReverb(ReverbConstants.OFF);
+    }
+
+    // Send a midi message, 2 bytes
+    protected void sendMidi(int m, int n) {
+        byte[] msg = new byte[2];
+
+        msg[0] = (byte) m;
+        msg[1] = (byte) n;
+
+        midi.write(msg);
+    }
+
+    // Send a midi message, 3 bytes
+    protected void sendMidi(int m, int n, int v) {
+        byte[] msg = new byte[3];
+
+        msg[0] = (byte) m;
+        msg[1] = (byte) n;
+        msg[2] = (byte) v;
+
+        midi.write(msg);
+    }
+
+    protected int getNote() {
+
+        try {
+            return map.get(targetFrequency);
+        } catch (Exception ignored) {
+        }
+
+        return 0;
     }
 }

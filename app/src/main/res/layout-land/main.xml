@@ -13,7 +13,6 @@
         android:orientation="horizontal"
         tools:ignore="NewApi,UselessParent">
 
-
         <LinearLayout
             android:layout_width="80dp"
             android:layout_height="match_parent"
@@ -177,8 +176,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="35dp"
+                    android:layout_marginRight="10dp"
                     android:autoText="false"
                     android:gravity="right"
                     android:text="0.0 Hz"
@@ -193,8 +192,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
                     android:layout_marginTop="2dp"
+                    android:layout_marginRight="2dp"
                     android:background="@color/Title"
                     android:orientation="horizontal">
 
@@ -223,6 +222,7 @@
                         tools:ignore="HardcodedText,RtlHardcoded,RtlSymmetry" />
 
                 </LinearLayout>
+
             </FrameLayout>
 
             <russianapp.tools.guitar_tunings.graphics.DialView
@@ -230,10 +230,10 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="2dp"
                 android:layout_marginLeft="2dp"
-                android:layout_marginRight="2dp"
                 android:layout_marginTop="33dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="2dp"
                 tools:ignore="InefficientWeight" />
 
             <LinearLayout
@@ -258,11 +258,42 @@
                     android:visibility="gone"
                     tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded,RtlSymmetry" />
 
+                <LinearLayout
+                    android:layout_marginTop="100dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/recBtn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@xml/selector_rec"
+                        android:layout_margin="8dp" />
+
+                    <ImageButton
+                        android:id="@+id/playBtn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="8dp"
+                        android:background="@xml/selector_play" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
                 <com.google.android.gms.ads.AdView
                     android:id="@+id/adView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="bottom"
                     ads:adSize="SMART_BANNER"
                     ads:adUnitId="@string/publisher_id" />
             </LinearLayout>
@@ -270,6 +301,5 @@
         </FrameLayout>
 
     </LinearLayout>
-
 
 </LinearLayout>

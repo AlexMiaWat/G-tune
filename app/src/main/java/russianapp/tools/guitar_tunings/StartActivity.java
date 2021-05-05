@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -19,12 +20,18 @@ import androidx.core.content.ContextCompat;
 public class StartActivity extends Activity {
 
     Activity main;
+    protected MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); // нет заголовка
         setContentView(R.layout.activity_start);
+
+        // Play music
+        player = MediaPlayer.create(this, R.raw.ants);
+        if (player != null)
+            player.start();
 
         main = this;
 
@@ -66,11 +73,38 @@ public class StartActivity extends Activity {
             try {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                if (player != null) {
+                    player.stop();
+                    player = null;
+                }
+
                 startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 500);
+        }, 1500);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Stop player
+        if (player != null) {
+            player.stop();
+            player = null;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (player == null) {
+            player = MediaPlayer.create(this, R.raw.ants);
+            player.start();
+        }
     }
 
     @Override
@@ -107,13 +141,19 @@ public class StartActivity extends Activity {
             builder.setPositiveButton("Yes", dialogClickListener);
 
             // Set the alert dialog no button click listener
-            builder.setNegativeButton("No",dialogClickListener);
+            builder.setNegativeButton("No", dialogClickListener);
 
             AlertDialog dialog = builder.create();
             // Display the alert dialog on interface
             dialog.show();
 
+            // Stop player
+            if (player != null) {
+                player.stop();
+                player = null;
+            }
         }
+
         return true;
     }
 }
